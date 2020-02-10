@@ -526,8 +526,6 @@ class TrackEvent: NSObject {
         var events = getMultiEvents()
         events.append(PENTATHLON_INDOOR)
         events.append(PENTATHLON_OUTDOOR)
-        events.append(HEPTATHLON_INDOOR)
-        events.append(HEPTATHLON_OUTDOOR)
         return events
     }
     
@@ -623,16 +621,25 @@ class TrackEvent: NSObject {
         }
     }
     
-    static func displayBaseEvent(event: String) -> String {
-        if event == PENTATHLON_INDOOR || event == PENTATHLON_OUTDOOR {
+    // for displaying in app only
+    static func displayEventNameChange(event: String) -> String {
+        switch event {
+        case PENTATHLON_INDOOR, PENTATHLON_OUTDOOR:
             return PENTATHLON
-        } else if event == SHUTTLE_HURDLE_RELAY_55 || event == SHUTTLE_HURDLE_RELAY_60 || event == SHUTTLE_HURDLE_RELAY_100 || event == SHUTTLE_HURDLE_RELAY_110 {
-            return SHUTTLE_HURDLE_RELAY
-        }
-        return event
+        case SHUTTLE_HURDLE_RELAY_55:
+            return SHR_55
+        case SHUTTLE_HURDLE_RELAY_60:
+            return SHR_60
+        case SHUTTLE_HURDLE_RELAY_100:
+            return SHR_100
+        case SHUTTLE_HURDLE_RELAY_110:
+            return SHR_110
+        default:
+            return event
     }
     
-    static func displayEventBySeason(event: String, isIndoor: Bool) -> String {
+    // for event name in database
+    static func getEventNameBySeason(event: String, isIndoor: Bool) -> String {
         if event == PENTATHLON {
             if isIndoor {
                 return PENTATHLON_INDOOR
@@ -706,8 +713,6 @@ class TrackEvent: NSObject {
         events.append(PENTATHLON_INDOOR)
         events.append(PENTATHLON_OUTDOOR)
         events.append(HEPTATHLON)
-        events.append(HEPTATHLON_INDOOR)
-        events.append(HEPTATHLON_OUTDOOR)
         events.append(DECATHLON)
         return events
     }
@@ -778,12 +783,14 @@ class TrackEvent: NSObject {
     static let SHUTTLE_HURDLE_RELAY_60 = "4x60H" // indoor season only
     static let SHUTTLE_HURDLE_RELAY_100 = "4x100H" // outdoor season, female only
     static let SHUTTLE_HURDLE_RELAY_110 = "4x110H" // outdoor season, male only
+    static let SHR_55 = "SHR 55" // display only
+    static let SHR_60 = "SHR 60" // display only
+    static let SHR_100 = "SHR 100" // display only
+    static let SHR_110 = "SHR 110" // display only
     static let PENTATHLON = "Pentathlon"
     static let PENTATHLON_INDOOR = "Pentathlon (Indoor)"
     static let PENTATHLON_OUTDOOR = "Pentathlon (Outdoor)"
     static let HEPTATHLON = "Heptathlon"
-    static let HEPTATHLON_INDOOR = "Heptathlon (Indoor)"
-    static let HEPTATHLON_OUTDOOR = "Heptathlon (Outdoor)"
     static let DECATHLON = "Decathlon"
     
     static let TYPE_RUNNING = "Running"
