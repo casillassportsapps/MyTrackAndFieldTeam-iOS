@@ -267,7 +267,11 @@ class TrackEvent: NSObject {
     }
     
     static func isRelayEvent(name: String) -> Bool {
-        let events = getRelayEvents()
+        var events = getRelayEvents()
+        events.append(SHUTTLE_HURDLE_RELAY_55)
+        events.append(SHUTTLE_HURDLE_RELAY_60)
+        events.append(SHUTTLE_HURDLE_RELAY_100)
+        events.append(SHUTTLE_HURDLE_RELAY_110)
         return events.contains(name)
     }
     
@@ -770,10 +774,10 @@ class TrackEvent: NSObject {
     static let SWEDISH_MEDLEY_RELAY = "Swedish Medley Relay"
     static let DISTANCE_MEDLEY_RELAY = "Distance Medley Relay"
     static let SHUTTLE_HURDLE_RELAY = "Shuttle Hurdle Relay"
-    static let SHUTTLE_HURDLE_RELAY_55 = "SHR 55" // indoor season only
-    static let SHUTTLE_HURDLE_RELAY_60 = "SHR 60" // indoor season only
-    static let SHUTTLE_HURDLE_RELAY_100 = "SHR 100" // outdoor season, female only
-    static let SHUTTLE_HURDLE_RELAY_110 = "SHR 110" // outdoor season, male only
+    static let SHUTTLE_HURDLE_RELAY_55 = "4x55H" // indoor season only
+    static let SHUTTLE_HURDLE_RELAY_60 = "4x60H" // indoor season only
+    static let SHUTTLE_HURDLE_RELAY_100 = "4x100H" // outdoor season, female only
+    static let SHUTTLE_HURDLE_RELAY_110 = "4x110H" // outdoor season, male only
     static let PENTATHLON = "Pentathlon"
     static let PENTATHLON_INDOOR = "Pentathlon (Indoor)"
     static let PENTATHLON_OUTDOOR = "Pentathlon (Outdoor)"
