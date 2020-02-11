@@ -106,7 +106,6 @@ class TrackEvent: NSObject {
         events.append(FOUR_HUNDRED_HURDLES)
         events.append(FIVE_HUNDRED_METERS)
         events.append(FOUR_BY_ONE_HUNDRED)
-        events.append(SHUTTLE_HURDLE_RELAY)
         events.append(SHUTTLE_HURDLE_RELAY_55)
         events.append(SHUTTLE_HURDLE_RELAY_60)
         events.append(SHUTTLE_HURDLE_RELAY_100)
@@ -268,10 +267,6 @@ class TrackEvent: NSObject {
     
     static func isRelayEvent(name: String) -> Bool {
         var events = getRelayEvents()
-        events.append(SHUTTLE_HURDLE_RELAY_55)
-        events.append(SHUTTLE_HURDLE_RELAY_60)
-        events.append(SHUTTLE_HURDLE_RELAY_100)
-        events.append(SHUTTLE_HURDLE_RELAY_110)
         return events.contains(name)
     }
     
@@ -287,7 +282,10 @@ class TrackEvent: NSObject {
         events.append(SIXTEEN_HUNDRED_MEDLEY_RELAY)
         events.append(SWEDISH_MEDLEY_RELAY)
         events.append(DISTANCE_MEDLEY_RELAY)
-        events.append(SHUTTLE_HURDLE_RELAY)
+        events.append(SHUTTLE_HURDLE_RELAY_55)
+        events.append(SHUTTLE_HURDLE_RELAY_60)
+        events.append(SHUTTLE_HURDLE_RELAY_100)
+        events.append(SHUTTLE_HURDLE_RELAY_110)
         return events
     }
     
@@ -700,15 +698,14 @@ class TrackEvent: NSObject {
         events.append(FOUR_BY_EIGHT_HUNDRED)
         events.append(FOUR_BY_FIFTEEN_HUNDRED)
         events.append(FOUR_BY_SIXTEEN_HUNDRED)
-        events.append(EIGHT_HUNDRED_MEDLEY_RELAY)
-        events.append(SIXTEEN_HUNDRED_MEDLEY_RELAY)
-        events.append(SWEDISH_MEDLEY_RELAY)
-        events.append(DISTANCE_MEDLEY_RELAY)
-        events.append(SHUTTLE_HURDLE_RELAY)
         events.append(SHUTTLE_HURDLE_RELAY_55)
         events.append(SHUTTLE_HURDLE_RELAY_60)
         events.append(SHUTTLE_HURDLE_RELAY_100)
         events.append(SHUTTLE_HURDLE_RELAY_110)
+        events.append(EIGHT_HUNDRED_MEDLEY_RELAY)
+        events.append(SIXTEEN_HUNDRED_MEDLEY_RELAY)
+        events.append(SWEDISH_MEDLEY_RELAY)
+        events.append(DISTANCE_MEDLEY_RELAY)
         events.append(PENTATHLON)
         events.append(PENTATHLON_INDOOR)
         events.append(PENTATHLON_OUTDOOR)
@@ -783,10 +780,10 @@ class TrackEvent: NSObject {
     static let SHUTTLE_HURDLE_RELAY_60 = "4x60H" // indoor season only
     static let SHUTTLE_HURDLE_RELAY_100 = "4x100H" // outdoor season, female only
     static let SHUTTLE_HURDLE_RELAY_110 = "4x110H" // outdoor season, male only
-    static let SHR_55 = "SHR 55" // display only
-    static let SHR_60 = "SHR 60" // display only
-    static let SHR_100 = "SHR 100" // display only
-    static let SHR_110 = "SHR 110" // display only
+    static let SHR_55 = "SHR 55" // possible display only
+    static let SHR_60 = "SHR 60" // possible display only
+    static let SHR_100 = "SHR 100" // possible display only
+    static let SHR_110 = "SHR 110" // possible display only
     static let PENTATHLON = "Pentathlon"
     static let PENTATHLON_INDOOR = "Pentathlon (Indoor)"
     static let PENTATHLON_OUTDOOR = "Pentathlon (Outdoor)"
