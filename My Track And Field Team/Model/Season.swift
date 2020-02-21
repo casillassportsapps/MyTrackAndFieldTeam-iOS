@@ -15,8 +15,6 @@ class Season: NSObject {
     static let NAME = "name"
     static let YEAR = "year"
     static let DESCRIPTION = "description"
-    static let LOCKED = "locked"
-    static let MANAGERS = "managers"
     
     static let CROSS_COUNTRY = "cross country"
     static let INDOOR = "indoor"
@@ -33,6 +31,21 @@ class Season: NSObject {
     var competitions: [Competition]? // used to retrieve athlete data
     
     override init() {
+    }
+    
+    init(name: String, year: Int, desc: String) {
+        self.name = name
+        self.year = year
+        self.desc = desc
+    }
+    
+    // used to get season from document
+    init(document: DocumentSnapshot) {
+        let dict = document.data()!
+        self.id = dict[Season.ID] as? String
+        self.name = dict[Season.NAME] as? String
+        self.year = dict[Season.YEAR] as? Int
+        self.desc = dict[Season.DESCRIPTION] as? String
     }
     
     // used with realtime database to load a season from athletes node (athletes' personal result data)
@@ -54,6 +67,15 @@ class Season: NSObject {
             
             competitions?.sort(by: {$0.dateTime! < $1.dateTime!})
         }
+    }
+    
+    func toDict() -> [String: Any] {
+        var dict = [String: Any]()
+        dict[Season.ID] = id
+        dict[Season.NAME] = name
+        dict[Season.YEAR] = year
+        dict[Season.DESCRIPTION] = desc
+        return dict
     }
     
     func isCrossCountry() -> Bool {

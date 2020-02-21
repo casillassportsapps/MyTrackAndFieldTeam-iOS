@@ -186,6 +186,9 @@ PODS:
   - Firebase/Messaging (6.13.0):
     - Firebase/CoreOnly
     - FirebaseMessaging (~> 4.1.9)
+  - Firebase/Storage (6.13.0):
+    - Firebase/CoreOnly
+    - FirebaseStorage (~> 3.4.2)
   - FirebaseAnalytics (6.1.6):
     - FirebaseCore (~> 6.4)
     - FirebaseInstanceID (~> 4.2)
@@ -247,6 +250,10 @@ PODS:
     - GoogleUtilities/Reachability (~> 6.2)
     - GoogleUtilities/UserDefaults (~> 6.2)
     - Protobuf (>= 3.9.2, ~> 3.9)
+  - FirebaseStorage (3.4.3):
+    - FirebaseAuthInterop (~> 1.0)
+    - FirebaseCore (~> 6.0)
+    - GTMSessionFetcher/Core (~> 1.1)
   - FirebaseUI/Auth (8.4.0):
     - Firebase/Auth (~> 6.0)
     - GoogleUtilities/UserDefaults
@@ -314,6 +321,7 @@ DEPENDENCIES:
   - Firebase/Database
   - Firebase/Firestore
   - Firebase/Messaging
+  - Firebase/Storage
   - FirebaseFirestoreSwift
   - FirebaseUI/Auth
   - FirebaseUI/Email
@@ -338,6 +346,7 @@ SPEC REPOS:
     - FirebaseFirestoreSwift
     - FirebaseInstanceID
     - FirebaseMessaging
+    - FirebaseStorage
     - FirebaseUI
     - GoogleAppMeasurement
     - GoogleDataTransport
@@ -369,6 +378,7 @@ SPEC CHECKSUMS:
   FirebaseFirestoreSwift: 0437bb10d83f8161a9131da1739998254c78fdf5
   FirebaseInstanceID: ebd2ea79ee38db0cb5f5167b17a0d387e1cc7b6e
   FirebaseMessaging: e8d71368a5c579083da02203146c953f3386d503
+  FirebaseStorage: 93fe2f8190a01bfb2b2c4932df7d679744c4ef1d
   FirebaseUI: 433550cb9e3d03ec7ee2c25f87493f76358d9b68
   GoogleAppMeasurement: dfe55efa543e899d906309eaaac6ca26d249862f
   GoogleDataTransport: 8e9b210c97d55fbff306cc5468ff91b9cb32dcf5
@@ -382,6 +392,6 @@ SPEC CHECKSUMS:
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   Protobuf: 20d79da7f20b5928b80043b05080b816e802659e
 
-PODFILE CHECKSUM: 3e35d6f8f20a274bc887200d022967c607d3f725
+PODFILE CHECKSUM: 4f8171e5d9cb4547ba49e3bc41f4dcdc3444e107
 
 COCOAPODS: 1.8.4

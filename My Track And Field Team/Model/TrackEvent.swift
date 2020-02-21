@@ -266,7 +266,7 @@ class TrackEvent: NSObject {
     }
     
     static func isRelayEvent(name: String) -> Bool {
-        var events = getRelayEvents()
+        let events = getRelayEvents()
         return events.contains(name)
     }
     
@@ -634,6 +634,7 @@ class TrackEvent: NSObject {
             return SHR_110
         default:
             return event
+        }
     }
     
     // for event name in database

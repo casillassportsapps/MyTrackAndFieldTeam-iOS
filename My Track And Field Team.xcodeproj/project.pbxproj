@@ -15,8 +15,12 @@
 		7867F4AA23D92AEA00940326 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7867F4A923D92AEA00940326 /* Assets.xcassets */; };
 		7867F4AD23D92AEA00940326 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7867F4AB23D92AEA00940326 /* LaunchScreen.storyboard */; };
 		7867F4BB23D9309E00940326 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7867F4BA23D9309E00940326 /* GoogleService-Info.plist */; };
+		7873C19923FF407F00BCB3C4 /* Team.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7873C19823FF407F00BCB3C4 /* Team.swift */; };
+		7873C19B23FF42FE00BCB3C4 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7873C19A23FF42FE00BCB3C4 /* User.swift */; };
+		7873C19D23FF43D400BCB3C4 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7873C19C23FF43D400BCB3C4 /* Location.swift */; };
 		787F4E2023F05B33008A4465 /* Season.swift in Sources */ = {isa = PBXBuildFile; fileRef = 787F4E1F23F05B33008A4465 /* Season.swift */; };
 		787F4E2223F0A023008A4465 /* Score.swift in Sources */ = {isa = PBXBuildFile; fileRef = 787F4E2123F0A023008A4465 /* Score.swift */; };
+		787F4E2423FA23B0008A4465 /* Access.swift in Sources */ = {isa = PBXBuildFile; fileRef = 787F4E2323FA23B0008A4465 /* Access.swift */; };
 		78A7283023ECFD75006EB363 /* Athlete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78A7282F23ECFD75006EB363 /* Athlete.swift */; };
 		78A7283223ED0157006EB363 /* EventResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78A7283123ED0157006EB363 /* EventResult.swift */; };
 		78A7283423EE29DC006EB363 /* Relay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78A7283323EE29DC006EB363 /* Relay.swift */; };
@@ -39,8 +43,12 @@
 		7867F4AC23D92AEA00940326 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7867F4AE23D92AEA00940326 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7867F4BA23D9309E00940326 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		7873C19823FF407F00BCB3C4 /* Team.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Team.swift; sourceTree = "<group>"; };
+		7873C19A23FF42FE00BCB3C4 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		7873C19C23FF43D400BCB3C4 /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		787F4E1F23F05B33008A4465 /* Season.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Season.swift; sourceTree = "<group>"; };
 		787F4E2123F0A023008A4465 /* Score.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Score.swift; sourceTree = "<group>"; };
+		787F4E2323FA23B0008A4465 /* Access.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Access.swift; sourceTree = "<group>"; };
 		78A7282F23ECFD75006EB363 /* Athlete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Athlete.swift; sourceTree = "<group>"; };
 		78A7283123ED0157006EB363 /* EventResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventResult.swift; sourceTree = "<group>"; };
 		78A7283323EE29DC006EB363 /* Relay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Relay.swift; sourceTree = "<group>"; };
@@ -139,6 +147,10 @@
 				78A7284023EFA5B8006EB363 /* Competition.swift */,
 				787F4E1F23F05B33008A4465 /* Season.swift */,
 				787F4E2123F0A023008A4465 /* Score.swift */,
+				787F4E2323FA23B0008A4465 /* Access.swift */,
+				7873C19823FF407F00BCB3C4 /* Team.swift */,
+				7873C19A23FF42FE00BCB3C4 /* User.swift */,
+				7873C19C23FF43D400BCB3C4 /* Location.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -289,15 +301,19 @@
 				78A7283A23EF2333006EB363 /* MeetDetailsViewController.swift in Sources */,
 				7867F4A523D92AE700940326 /* MainViewController.swift in Sources */,
 				78A7283423EE29DC006EB363 /* Relay.swift in Sources */,
+				7873C19D23FF43D400BCB3C4 /* Location.swift in Sources */,
 				78A7283823EEE630006EB363 /* TrackEvent.swift in Sources */,
 				7867F4A123D92AE700940326 /* AppDelegate.swift in Sources */,
 				78A7283623EE36A5006EB363 /* MultiEvent.swift in Sources */,
+				7873C19B23FF42FE00BCB3C4 /* User.swift in Sources */,
 				78A7283C23EF293E006EB363 /* EventDetailsViewController.swift in Sources */,
 				78A7284123EFA5B8006EB363 /* Competition.swift in Sources */,
 				787F4E2023F05B33008A4465 /* Season.swift in Sources */,
 				7867F4A323D92AE700940326 /* SceneDelegate.swift in Sources */,
 				78A7283223ED0157006EB363 /* EventResult.swift in Sources */,
+				7873C19923FF407F00BCB3C4 /* Team.swift in Sources */,
 				78A7283F23EFA2BF006EB363 /* DatabaseUtils.swift in Sources */,
+				787F4E2423FA23B0008A4465 /* Access.swift in Sources */,
 				78A7283023ECFD75006EB363 /* Athlete.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

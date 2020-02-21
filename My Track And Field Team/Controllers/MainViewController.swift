@@ -23,6 +23,8 @@ class MainViewController: UIViewController {
                 if firebaseUser != nil {
                     print("authenticated")
                     print(firebaseUser!.uid)
+                    
+                    self.test()
                 } else {
                     self.signIn()
                 }
@@ -64,6 +66,24 @@ class MainViewController: UIViewController {
         } catch {
         
         }
+    }
+
+    
+    // TESTING DATABASE AND METHODS BELOW
+    func test() {
+        
+    }
+    
+    func addTeamAndOwner(id: String) {
+        let owner = User(id: id, name: "David Casillas", email: "trackdave2004@yahoo.com")
+        
+        DatabaseUtils.realTimeDB.child("\(Location.LOCATION)/US/NY/11751").observeSingleEvent(of: .value) { (snapshot) in
+            let location = Location(snapshot: snapshot)
+            let team = Team(name: "ESPN", password: "pass", level: "open", gender: "male", unit: "imperial", owner: owner, location: location)
+            
+            DatabaseUtils.addTeam(team: team)
+        }
+        
     }
     
     func getAthlete() {

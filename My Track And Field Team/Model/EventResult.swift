@@ -23,6 +23,9 @@ class EventResult: NSObject {
     static let DQ_SEED = 99999
     static let FOUL_SEED = -1
     
+    static let RUN_KILO = "K Run";
+    static let RUN_MILE = " Mile Run";
+    
     var id: String?
     var name: String?
     var result: String?
