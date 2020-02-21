@@ -24,6 +24,14 @@ class Competition: NSObject {
     static let RESULTS = "results"
     static let SCORING = "scoring"
     
+    static let TYPE_INVITATIONAL = "Invitational"
+    static let TYPE_CHAMPIONSHIP = "Championship"
+    static let TYPE_CROSSOVER = "Crossover"
+    static let TYPE_DUAL_MEET = "Dual Meet"
+    static let TYPE_DOUBLE_DUAL_MEET = "Double Dual Meet"
+    static let TYPE_TRIPLE_DUAL_MEET = "triple Dual Meet"
+    
+    
     var id: String?
     var name: String?
     var location: String?
@@ -31,6 +39,7 @@ class Competition: NSObject {
     var dateTime: Int?
     var course: String?
     var seasonId: String?
+    var denormalize: Bool? // set true ONLY if updating competition's name, dateTime, location, or course (if course exists)
     
     var opponent: [String: String]?
     var score: [String: String]?
@@ -94,6 +103,64 @@ class Competition: NSObject {
             // this snapshot should exist, if it doesn't use crashlytics to log the error
             // something most likely went wrong after deleting results
         }
+    }
+    
+    func toDict() -> [String: Any] {
+        var dict = [String: Any]()
+        dict[Competition.ID] = id
+        dict[Competition.NAME] = name
+        dict[Competition.LOCATION] = location
+        dict[Competition.DATE_TIME] = dateTime
+        dict[Competition.TYPE] = type
+        if course != nil { // to avoid "null" as a value in the database
+            dict[Competition.COURSE] = course
+        }
+        if opponent != nil {
+            dict[Competition.OPPONENT] = opponent
+        }
+        if score != nil {
+            dict[Competition.SCORE] = score
+        }
+        
+        return dict
+    }
+    
+    func getMeetTypes(isIndoor: Bool) -> [String] {
+        var types = [String]()
+        types.append(Competition.TYPE_INVITATIONAL)
+        types.append(Competition.TYPE_CHAMPIONSHIP)
+        if isIndoor {
+            types.append(Competition.TYPE_CROSSOVER)
+        } else {
+            types.append(Competition.TYPE_DUAL_MEET)
+            types.append(Competition.TYPE_DOUBLE_DUAL_MEET)
+            types.append(Competition.TYPE_TRIPLE_DUAL_MEET)
+        }
+        
+        return types
+    }
+    
+    func isInvite() -> Bool {
+        return type == Competition.TYPE_INVITATIONAL
+        || type == Competition.TYPE_CROSSOVER
+    }
+    
+    func isDualMeet() -> Bool {
+        return type == Competition.TYPE_DUAL_MEET
+            || type == Competition.TYPE_DOUBLE_DUAL_MEET
+            || type == Competition.TYPE_TRIPLE_DUAL_MEET
+    }
+    
+    func isTrackDual(isOutdoor: Bool) -> Bool {
+        return isDualMeet() && isOutdoor
+    }
+    
+    func isCrossCountryDual(isCrossCountry: Bool) -> Bool {
+        return isDualMeet() && isCrossCountry
+    }
+    
+    func getOpponentCount() -> Int {
+        return opponent?.count ?? 0
     }
     
     override func isEqual(_ object: Any?) -> Bool {

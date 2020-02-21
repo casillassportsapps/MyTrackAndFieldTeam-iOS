@@ -22,6 +22,7 @@ class Athlete: NSObject {
     var lastName: String?
     var type: String?
     var seasons: [String]?
+    var denormalize: Bool? // set true ONLY if updating athlete's first name or last name
     
     override init() {
     }
@@ -44,6 +45,21 @@ class Athlete: NSObject {
         self.lastName = dict[Athlete.LAST_NAME] as? String
         self.type = dict[Athlete.TYPE] as? String
         self.seasons = dict[Athlete.SEASONS] as? [String]
+    }
+    
+    func toDict() -> [String: Any] {
+        var dict = self.toDictBasic()
+        dict[Athlete.TYPE] = type
+        dict[Athlete.SEASONS] = seasons
+        return dict
+    }
+    
+    func toDictBasic() -> [String: Any] {
+        var dict = [String: Any]()
+        dict[Athlete.ID] = id
+        dict[Athlete.FIRST_NAME] = firstName
+        dict[Athlete.LAST_NAME] = lastName
+        return dict
     }
     
     func lastNameFirstName() -> String? {
