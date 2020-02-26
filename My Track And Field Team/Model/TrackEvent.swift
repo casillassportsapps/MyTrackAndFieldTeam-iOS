@@ -100,6 +100,7 @@ class TrackEvent: NSObject {
         events.append(ONE_HUNDRED_HURDLES)
         events.append(ONE_HUNDRED_TEN_HURDLES)
         events.append(TWO_HUNDRED_METERS)
+        events.append(TWO_HUNDRED_HURDLES)
         events.append(THREE_HUNDRED_METERS)
         events.append(THREE_HUNDRED_HURDLES)
         events.append(FOUR_HUNDRED_METERS)
@@ -130,6 +131,7 @@ class TrackEvent: NSObject {
         events.append(ONE_HUNDRED_HURDLES)
         events.append(ONE_HUNDRED_TEN_HURDLES)
         events.append(TWO_HUNDRED_METERS)
+        events.append(TWO_HUNDRED_HURDLES)
         events.append(THREE_HUNDRED_METERS)
         events.append(THREE_HUNDRED_HURDLES)
         events.append(FOUR_HUNDRED_METERS)
@@ -178,6 +180,7 @@ class TrackEvent: NSObject {
         events.append(ONE_HUNDRED_HURDLES)
         events.append(ONE_HUNDRED_TEN_HURDLES)
         events.append(TWO_HUNDRED_METERS)
+        events.append(TWO_HUNDRED_HURDLES)
         events.append(THREE_HUNDRED_METERS)
         events.append(THREE_HUNDRED_HURDLES)
         events.append(FOUR_HUNDRED_METERS)
@@ -228,6 +231,7 @@ class TrackEvent: NSObject {
             events.append(ONE_HUNDRED_METERS)
             events.append(isMale ? ONE_HUNDRED_TEN_HURDLES : ONE_HUNDRED_HURDLES)
             events.append(TWO_HUNDRED_METERS)
+            events.append(TWO_HUNDRED_HURDLES)
             events.append(THREE_HUNDRED_METERS)
             events.append(THREE_HUNDRED_HURDLES)
             events.append(FOUR_HUNDRED_METERS)
@@ -661,6 +665,7 @@ class TrackEvent: NSObject {
         events.append(ONE_HUNDRED_HURDLES)
         events.append(ONE_HUNDRED_TEN_HURDLES)
         events.append(TWO_HUNDRED_METERS)
+        events.append(TWO_HUNDRED_HURDLES)
         events.append(THREE_HUNDRED_METERS)
         events.append(THREE_HUNDRED_HURDLES)
         events.append(FOUR_HUNDRED_METERS)
@@ -734,6 +739,7 @@ class TrackEvent: NSObject {
     static let ONE_HUNDRED_HURDLES = "100H"
     static let ONE_HUNDRED_TEN_HURDLES = "110H"
     static let TWO_HUNDRED_METERS = "200m"
+    static let TWO_HUNDRED_HURDLES = "200H"
     static let THREE_HUNDRED_METERS = "300m"
     static let THREE_HUNDRED_HURDLES = "300H"
     static let FOUR_HUNDRED_METERS = "400m"
@@ -776,15 +782,10 @@ class TrackEvent: NSObject {
     static let SIXTEEN_HUNDRED_MEDLEY_RELAY = "1600m Medley Relay"
     static let SWEDISH_MEDLEY_RELAY = "Swedish Medley Relay"
     static let DISTANCE_MEDLEY_RELAY = "Distance Medley Relay"
-    static let SHUTTLE_HURDLE_RELAY = "Shuttle Hurdle Relay"
     static let SHUTTLE_HURDLE_RELAY_55 = "4x55H" // indoor season only
     static let SHUTTLE_HURDLE_RELAY_60 = "4x60H" // indoor season only
     static let SHUTTLE_HURDLE_RELAY_100 = "4x100H" // outdoor season, female only
     static let SHUTTLE_HURDLE_RELAY_110 = "4x110H" // outdoor season, male only
-    static let SHR_55 = "SHR 55" // possible display only
-    static let SHR_60 = "SHR 60" // possible display only
-    static let SHR_100 = "SHR 100" // possible display only
-    static let SHR_110 = "SHR 110" // possible display only
     static let PENTATHLON = "Pentathlon"
     static let PENTATHLON_INDOOR = "Pentathlon (Indoor)"
     static let PENTATHLON_OUTDOOR = "Pentathlon (Outdoor)"
