@@ -13,7 +13,7 @@ class EventResult: NSObject {
     static let NAME = "name"
     static let RESULT = "result"
     static let TIMES = "times"
-    static let ATTEMPTS = "attemps"
+    static let ATTEMPTS = "attempts"
     static let POINTS = "points"
     static let COMMENT = "comment"
     static let ATHLETE = "athlete"

@@ -19,11 +19,13 @@ class MeetDetailsViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        // sets up a snapshot observer
         self.observeResults()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        // removes the observer
         resultsRef.removeAllObservers()
     }
 
@@ -32,25 +34,61 @@ class MeetDetailsViewController: UIViewController {
         // retrieve teamID from previous view controller
         // retrieve seasonID from previous view controller
         // retrieve competition model from previous view controller
+        // navigation bar title should be name of competition
         
+        // dummy data
         teamId = "-LICDiRCU9HzswMnhCzt"
         seasonId = "-Lj8rV0t-rtmWoKFAqVU"
         meet = Competition(id: "-LIqRaCSqctd_E-6eSkc")
         
         resultsRef = ref.child("\(Competition.COMPETITIONS)/\(teamId!)/\(seasonId!)/\(Competition.RESULTS)/\(meet.id!)")
+        
+        // menu options
+        // Edit, Delete, Save Events, Load Events, Dual Meet Score (always show this icon), Events By Athlete, Export
+        
+        // Edit:
+        // edit a competition by loading the "competition form" populated by current competition information
+        // all fields can be updated, see DatabaseUtils method updateCompetition
+        // if the competition is a dual meet, the name of the meet nor the number of opponents can be changed
+        
+        // Delete:
+        // a competition can only be deleted if there are no events
+        
+        // Save Events:
+        // saves the events in order to a local database for future loading
+        // hide menu icon if season is cross country
+        
+        // Load Events:
+        // adds the events to a meet loaded from a local database, can only be done if there are no events
+        // hide menu icon if season is cross country
+        
+        // Dual Meet Score:
+        // this menu icon should always show, on clicked perform segue to DualMeetViewController
+        // can only be clicked on if there is at least one event
+        // only show menu icon if the meet is a type Dual, Double, or Triple Dual Meet
+        
+        // Events By Athlete:
+        // shows all the athletes in alphabetical order and the events they are competiting in
+        // can only be used if there are results
+        
+        // Export: option to select excel or pdf
+        // exports the data to the selected option
     }
     
     func didSelectEvent(trackEvent: TrackEvent) {
-        // perform segue to EventDetailsViewController
+        // perform segue to EventDetailsViewController when the tableViewCell is tapped
         // send data: teamId, competition model, and trackEvent from parameter
     }
     
-    func didSelectDualMeet() {
-        // perform segue to DualMeetViewController
+    func didLongTapEvent() {
+        // this allows an option to then select multiple events to delete
+        // events can only be deleted only if there are no results
     }
     
     func observeResults() {
         // before loading data:
+        
+        // loading dialog should appear
         // clear list of data to avoid possible duplicates
         // disable/hide add button or any other menu options
         
@@ -85,13 +123,13 @@ class MeetDetailsViewController: UIViewController {
         })
         
         resultsRef.observeSingleEvent(of: .value, with:  { (snapshot) in
+            // this observeSingleEvent method is not loading the data again according to firebase
+            // this is to guarantee that all the data has been loaded
+            
             // after data is loaded:
             // enable/show add button or any other menu options
-        }) { (error) in
-            // show error if unable to read data
-            // only happens when a user is removed as a manager or an unauthorized user (can't really happen)
-            print("Error: You no longer have access to this team's data")
-        }
+            // loading dialog should disappear
+        })
     }
 
     // singleQueryCompetitionData not used, just practice

@@ -39,7 +39,7 @@ class Competition: NSObject {
     var dateTime: Int?
     var course: String?
     var seasonId: String?
-    var denormalize: Bool? // set true ONLY if updating competition's name, dateTime, location, or course (if course exists)
+    var denormalize: Bool = false // set true ONLY if updating competition's name, dateTime, location, or course (if course exists)
     
     var opponent: [String: String]?
     var score: [String: String]?
@@ -123,6 +123,51 @@ class Competition: NSObject {
         }
         
         return dict
+    }
+    
+    // find all paths for athletes that have competed in competition
+    static func getPathsToDenormalize(teamId: String, competition: Competition, snapshot: DataSnapshot) -> [String: Any]? {
+        if !snapshot.exists() {
+            return nil
+        }
+        
+        // first collect all the athlete ids that need to be updated
+        var athleteIds = Set<String>()
+        
+        let resultsSnapshot = snapshot.childSnapshot(forPath: Competition.RESULTS)
+        let resultsEnumerator = resultsSnapshot.children
+        
+        while let eventResultSnapshot = resultsEnumerator.nextObject() as? DataSnapshot {
+            let eventResult = EventResult(snapshot: eventResultSnapshot)
+            let athlete = eventResult.athlete
+            if let athlete = athlete { // normal a event or multi-event
+                athleteIds.insert(athlete.id!)
+            } else { // must be a relay (relay does not have athlete node)
+                let relay = Relay(snapshot: eventResultSnapshot)
+                let athletes = relay.getRelayAthletes()
+                for athlete in athletes {
+                    athleteIds.insert(athlete.id!)
+                }
+            }
+        }
+        
+        // now create the paths with the athlete ids with each necessary competition field
+        var updates = [String: Any]()
+        let seasonId = competition.seasonId
+        let competitionId = competition.id
+        
+        for athleteId in athleteIds {
+            let path = "\(Athlete.ATHLETES)/\(athleteId)/\(Athlete.RESULTS)/\(teamId)/\(Team.SEASONS)/\(seasonId!)/\(Team.COMPETITIONS)/\(competitionId!)"
+            
+            updates["\(path)/\(Competition.NAME)"] = competition.name
+            updates["\(path)/\(Competition.LOCATION)"] = competition.location
+            updates["\(path)/\(Competition.DATE_TIME)"] = competition.dateTime
+            if competition.course != nil {
+                updates["\(path)/\(Competition.COURSE)"] = competition.course
+            }
+        }
+        
+        return updates
     }
     
     func getMeetTypes(isIndoor: Bool) -> [String] {

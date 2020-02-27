@@ -22,11 +22,13 @@ class EventDetailsViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        // sets up the snapshot observer
         self.observeResults()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        // removes the snapshot observer
         resultsRef.removeAllObservers()
     }
 
@@ -36,8 +38,9 @@ class EventDetailsViewController: UIViewController {
         // retrieve seasonID from previous view controller
         // retrieve competition model from previous view controller
         // retrieve trackEvent model from previous view controller
-        // retrieve name from previous view controller and make that title of navigation bar
+        // navigation bar should be title of track event
         
+        // dummy data
         teamId = "-LICDiRCU9HzswMnhCzt"
         seasonId = "-Lj8rV0t-rtmWoKFAqVU"
         meet = Competition(id: "-LIqRaCSqctd_E-6eSkc")
@@ -50,10 +53,18 @@ class EventDetailsViewController: UIViewController {
         
         isRelay = TrackEvent.isRelayEvent(name: name)
         isMultiEvent = TrackEvent.isMultiEvent(name: name)
+        
+        // menu options
+        // Time:
+        // clock menu icon where the user has an option to set a time when the event is going to be run or remove the time
+        // if a time is set, the clock icon becomes the time (ie: 4:00 PM), when removed, the clock icon returns
+        // this icon is only an option at invitationals or championship type competitions
     }
     
     func didSelectResult(eventResult: EventResult) {
-        // options below cell should become visible
+        // on tapping of a tableViewCell
+        // options below tableViewCell should become visible
+        // option for edit a result, deleting the result, or entering a note
     }
 
     func observeResults() {

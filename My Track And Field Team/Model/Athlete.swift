@@ -17,12 +17,17 @@ class Athlete: NSObject {
     static let TYPE = "type"
     static let SEASONS = "seasons"
     
+    static let RESULTS = "results"
+    static let NOTES = "notes"
+    
+    static let PHOTOS = "athletePhotos"
+    
     var id: String?
     var firstName: String?
     var lastName: String?
     var type: String?
     var seasons: [String]?
-    var denormalize: Bool? // set true ONLY if updating athlete's first name or last name
+    var denormalize: Bool = false // set true ONLY if updating athlete's first name or last name
     
     override init() {
     }
@@ -60,6 +65,41 @@ class Athlete: NSObject {
         dict[Athlete.FIRST_NAME] = firstName
         dict[Athlete.LAST_NAME] = lastName
         return dict
+    }
+    
+    // find all paths where athlete has competed in order to update athlete's name
+    static func getPathsToDenormalize(teamId: String, athlete: Athlete, snapshot: DataSnapshot) -> [String: Any]? {
+        if !snapshot.exists() {
+            return nil
+        }
+        
+        var updates = [String: Any]()
+        
+        let seasonEnumerator = snapshot.childSnapshot(forPath: Team.SEASONS).children
+        while let seasonSnapshot = seasonEnumerator.nextObject() as? DataSnapshot {
+            let seasonId = seasonSnapshot.key
+            let competitionEnumerator = snapshot.childSnapshot(forPath: Team.COMPETITIONS).children
+            while let competitionSnapshot = competitionEnumerator.nextObject() as? DataSnapshot {
+                let competition = Competition(snapshot: competitionSnapshot)
+                let eventResults = competition.results!
+                for eventResult in eventResults {
+                    var eventName = DatabaseUtils.encodeKey(key: eventResult.name!)
+                    if eventName.contains(TrackEvent.PENTATHLON) {
+                        eventName = TrackEvent.PENTATHLON
+                    }
+                    
+                    let path = "\(Competition.COMPETITIONS)/\(teamId)/\(seasonId)/\(Competition.RESULTS)/\(competition.id!)\(eventName)\(TrackEvent.RESULTS)/\(eventResult.id!)"
+                    if eventResult.athlete != nil { // normal event or multi-event
+                        updates["\(path)/\(EventResult.ATHLETE)"] = athlete.toDictBasic()
+                    } else { // relay event
+                        let relay = eventResult as! Relay
+                        updates["\(path)/\(Relay.RESULTS)/\(relay.relayLeg!)/\(EventResult.ATHLETE)"] = athlete.toDictBasic()
+                    }
+                }
+            }
+        }
+        
+        return updates
     }
     
     func lastNameFirstName() -> String? {
