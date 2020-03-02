@@ -63,9 +63,9 @@ class MeetDetailsViewController: UIViewController {
         // hide menu icon if season is cross country
         
         // Dual Meet Score:
-        // this menu icon should always show, on clicked perform segue to DualMeetViewController
-        // can only be clicked on if there is at least one event
-        // only show menu icon if the meet is a type Dual, Double, or Triple Dual Meet
+        // can only work if there is at least one event
+        // only show menu icon if the meet is a type Dual, Double, or Triple Dual Meet and always keep it showing over any other menu icon
+        // on tapped perform segue to DualMeetViewController
         
         // Events By Athlete:
         // shows all the athletes in alphabetical order and the events they are competiting in
