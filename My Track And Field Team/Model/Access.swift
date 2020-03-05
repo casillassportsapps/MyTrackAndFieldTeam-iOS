@@ -73,8 +73,6 @@ class Access: NSObject {
                     }
                     
                     seasonManagers?[seasonId] = managersList
-                } else {
-                    seasonManagers = nil
                 }
             }
         } else {

@@ -69,25 +69,30 @@ class TrackEvent: NSObject {
         return self.name.hashValue
     }
     
+    // determines if an event is timed
     static func isEventTimed(name: String) -> Bool {
         let events = getTimedEvents()
         return events.contains(name)
     }
     
+    // array all timed events
     static func getTimedEvents() -> [String] {
         var events = [String]()
         events.append(contentsOf: getWalkingEvents())
         events.append(contentsOf: getRunningEvents())
         events.append(contentsOf: getRelayEvents())
-        events.append(TWELVE_HUNDRED_METERS)
+        events.append(TWELVE_HUNDRED_METERS) // // not a normal event, used only in distance medley relay
         return events
     }
     
+    // determines if an event is timed with seconds and milliseconds (ie: 9.52, 72.39, up to 3 decimal places)
+    // if event is not listed then the event is timed with minutes, seconds, and milliseconds (ie: 2:15.68)
     static func isEventTimedInSeconds(name: String) -> Bool {
         let events = getEventsTimedInSeconds()
         return events.contains(name)
     }
     
+    // array of events timed in seconds
     static func getEventsTimedInSeconds() -> [String] {
         var events = [String]()
         events.append(FIFTY_METERS)
@@ -114,11 +119,13 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // determine if an event can display a trial and/or final time
     static func isEventWithTrialFinal(name: String) -> Bool {
         let events = getEventsWithTrialFinal()
         return events.contains(name)
     }
     
+    // array of events which can display a trial and/or final time
     static func getEventsWithTrialFinal() -> [String] {
         var events = [String]()
         events.append(FIFTY_METERS)
@@ -140,11 +147,13 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // determines if an event can have time splits (either per lap or distance)
     static func isEventThatSplits(isCrossCountry: Bool, name: String) -> Bool {
         let events = getEventsThatSplit()
         return isCrossCountry || events.contains(name)
     }
     
+    // array of events that can split
     static func getEventsThatSplit() -> [String] {
         var events = [String]()
         events.append(SIX_HUNDRED_METERS)
@@ -163,11 +172,13 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // determines if event is a running event
     static func isRunningEvent(name: String) -> Bool {
         let events = getRunningEvents()
         return events.contains(name)
     }
     
+    // array of all running events
     static func getRunningEvents() -> [String] {
         var events = [String]()
         events.append(FIFTY_METERS)
@@ -202,6 +213,7 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // array of all running events for a specific season or gender
     static func getRunningEvents(isIndoor: Bool, isMale: Bool) -> [String] {
         var events = [String]()
         if isIndoor {
@@ -255,11 +267,13 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // determines if an event is a walking event
     static func isWalkEvent(name: String) -> Bool {
         let events = getWalkingEvents()
         return events.contains(name)
     }
     
+    // array of all walking events
     static func getWalkingEvents() -> [String] {
         var events = [String]()
         events.append(FIFTEEN_HUNDRED_METER_WALK)
@@ -269,11 +283,13 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // determines if an event is a relay (relay always has 4 legs (athletes) running)
     static func isRelayEvent(name: String) -> Bool {
         let events = getRelayEvents()
         return events.contains(name)
     }
     
+    // array of all relay events
     static func getRelayEvents() -> [String] {
         var events = [String]()
         events.append(FOUR_BY_ONE_HUNDRED)
@@ -293,6 +309,7 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // the 4 events in a 4x100m relay (each split/leg is 100m)
     static func getEventsOfFourByOne() -> [String] {
         var events = [String]()
         for _ in 0...3 {
@@ -301,6 +318,7 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // the 4 events in a 4x200m relay
     static func getEventsOfFourByTwo() -> [String] {
         var events = [String]()
         for _ in 0...3 {
@@ -309,6 +327,7 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // the 4 events in a 4x400m relay
     static func getEventsOfFourByFour() -> [String] {
         var events = [String]()
         for _ in 0...3 {
@@ -317,6 +336,7 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // the 4 events in a 4x800m relay
     static func getEventsOfFourByEight() -> [String] {
         var events = [String]()
         for _ in 0...3 {
@@ -325,6 +345,7 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // the 4 events in a 4x1500m relay
     static func getEventsOfFourByFifteen() -> [String] {
         var events = [String]()
         for _ in 0...3 {
@@ -333,6 +354,7 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // the 4 events in a 4x1600m relay
     static func getEventsOfFourBySixteen() -> [String] {
         var events = [String]()
         for _ in 0...3 {
@@ -341,19 +363,20 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // the 4 events in a shuttle hurdle relay
     static func getEventsOfSHR(isIndoor: Bool, isMale: Bool, is55: Bool) -> [String] {
         var events = [String]()
         for _ in 0...3 {
-            if isIndoor {
+            if isIndoor { // indoor you can select 4x55H and/or 4x60H
                 if is55 {
                     events.append(FIFTY_FIVE_HURDLES)
                 } else {
                     events.append(SIXTY_HURDLES)
                 }
             } else {
-                if isMale {
+                if isMale { // male is 4x110H
                     events.append(ONE_HUNDRED_TEN_HURDLES)
-                } else {
+                } else { // female is 4x100H
                     events.append(ONE_HUNDRED_HURDLES)
                 }
             }
@@ -361,6 +384,8 @@ class TrackEvent: NSObject {
         return events
     }
     
+    //medley relays have 4 events, usually all different distances
+    // the 4 events of 800m medley relay
     static func getEventOf800mMedley() -> [String] {
         var events = [String]()
         events.append(ONE_HUNDRED_METERS)
@@ -370,6 +395,7 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // the 4 events of swedish medley relay
     static func getEventOfSwedishMedley() -> [String] {
         var events = [String]()
         events.append(ONE_HUNDRED_METERS)
@@ -379,6 +405,7 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // the 4 events of 1600m medley relay
     static func getEventOf1600mMedley() -> [String] {
         var events = [String]()
         events.append(TWO_HUNDRED_METERS)
@@ -388,6 +415,7 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // the 4 events of distance medley relay
     static func getEventOfDistanceMedley() -> [String] {
         var events = [String]()
         events.append(TWELVE_HUNDRED_METERS)
@@ -397,11 +425,15 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // determines if event is a multi-event
     static func isMultiEvent(name: String) -> Bool {
-        let events = getMultiEvents()
+        var events = getMultiEvents()
+        events.append(PENTATHLON_INDOOR)
+        events.append(PENTATHLON_OUTDOOR)
         return events.contains(name)
     }
     
+    // array of multi-events
     static func getMultiEvents() -> [String] {
         var events = [String]()
         events.append(PENTATHLON)
@@ -410,6 +442,7 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // array of multi-events depending on whether season is indoor or outdoor and team is male or female
     static func getMultiEvents(isIndoor: Bool, isMale: Bool) -> [String] {
         var events = [String]()
         events.append(PENTATHLON)
@@ -428,6 +461,7 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // array of events of the multi-event pentathlon, which is different per season, gender, and level
     static func getEventsOfPentathlon(isIndoor: Bool, isMale: Bool, isOpenLevel: Bool) -> [String] {
         var events = [String]()
         
@@ -472,6 +506,7 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // array of events of heptathlon, determines if male (indoor season) or female (outdoor season)
     static func getEventsOfHeptathlon(isMale: Bool) -> [String] {
         var events = [String]()
         if isMale {
@@ -495,6 +530,7 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // array of events of decathlon, depending if male or female
     static func getEventsOfDecathlon(isMale: Bool) -> [String] {
         var events = [String]()
         if isMale {
@@ -524,6 +560,7 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // events which result in measurement type points
     static func getEventsThatResultInPoints() -> [String] {
         var events = getMultiEvents()
         events.append(PENTATHLON_INDOOR)
@@ -531,16 +568,19 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // determines if event is a field event
     static func isFieldEvent(name: String) -> Bool {
         let events = getFieldEvents()
         return events.contains(name)
     }
     
+    // determines if event can have attempts
     static func isFieldEventWithAttempts(name: String) -> Bool {
         let events = getEventsThatResultInDistance()
         return events.contains(name)
     }
     
+    // array of all field events
     static func getFieldEvents() -> [String] {
         var events = [String]()
         events.append(HIGH_JUMP)
@@ -555,6 +595,7 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // array of field events depending on season
     static func getFieldEvents(isIndoor: Bool) -> [String] {
         var events = [String]()
         events.append(HIGH_JUMP)
@@ -574,6 +615,7 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // events which result in measurement type height
     static func getEventsThatResultInHeight() -> [String] {
         var events = [String]()
         events.append(HIGH_JUMP)
@@ -581,6 +623,7 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // events which result in measurement type distance
     static func getEventsThatResultInDistance() -> [String] {
         var events = [String]()
         events.append(LONG_JUMP)
@@ -593,11 +636,34 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // outputs which measurement type an event measures to
+    static func getEventMeasurementType(event: String) -> String {
+        var events = getEventsThatResultInHeight();
+        if (events.contains(event)) {
+            return RESULT_TYPE_HEIGHT
+        }
+        
+        events = getEventsThatResultInDistance();
+        if (events.contains(event)) {
+            return RESULT_TYPE_DISTANCE
+        }
+        
+        events = getEventsThatResultInPoints();
+        if (events.contains(event)) {
+            return RESULT_TYPE_POINTS
+        }
+        
+        return RESULT_TYPE_TIME
+    }
+    
+    // field event measured with feet, inches, and quarterinches (ie: 5'-5.5", 16'-11.25")
+    // if event is not listed then the event is measured with feet and inches (ie: 5'-0", 231'-2")
     static func isMeasuredInQuarterInches(name: String) -> Bool {
         let events = getEventsMeasuredInQuarterInches()
         return events.contains(name)
     }
     
+    // array of field events which measure with quarterinches
     static func getEventsMeasuredInQuarterInches() -> [String] {
         var events = [String]()
         events.append(HIGH_JUMP)
@@ -609,6 +675,7 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // outputs the type of track event
     static func getTrackEventType(event: String) -> String {
         if isWalkEvent(name: event) {
             return TYPE_WALKING
@@ -623,7 +690,7 @@ class TrackEvent: NSObject {
         }
     }
     
-    // for displaying in app only
+    // outputs base event pentathlon from an indoor or outdoor penatathlon
     static func displayEventNameChange(event: String) -> String {
         switch event {
         case PENTATHLON_INDOOR, PENTATHLON_OUTDOOR:
@@ -633,7 +700,7 @@ class TrackEvent: NSObject {
         }
     }
     
-    // for event name in database
+    // outputs which pentathlon for event name for field 'name' in event result
     static func getEventNameBySeason(event: String, isIndoor: Bool) -> String {
         if event == PENTATHLON {
             if isIndoor {
@@ -645,6 +712,7 @@ class TrackEvent: NSObject {
         return event
     }
     
+    // array of all events, this is the default order of events (used in stats to display order of stats)
     static func getAllEvents() -> [String] {
         var events = [String]()
         events.append(FIFTY_METERS)
@@ -712,10 +780,12 @@ class TrackEvent: NSObject {
         return events
     }
     
+    // index of event in allEvents array
     static func getIndex(event: String) -> Int {
         return getAllEvents().firstIndex(of: event)!
     }
     
+    // sorts method for default order of events
     static func sortEvents(event1: String, event2: String) -> Bool {
         return getIndex(event: event1) < getIndex(event: event2)
     }
@@ -740,7 +810,7 @@ class TrackEvent: NSObject {
     static let SIX_HUNDRED_METERS = "600m"
     static let EIGHT_HUNDRED_METERS = "800m"
     static let ONE_THOUSAND_METERS = "1000m"
-    static let TWELVE_HUNDRED_METERS = "1200m"
+    static let TWELVE_HUNDRED_METERS = "1200m" // not a normal event, used only in distance medley relay
     static let FIFTEEN_HUNDRED_METERS = "1500m"
     static let SIXTEEN_HUNDRED_METERS = "1600m"
     static let ONE_MILE = "1 Mile"

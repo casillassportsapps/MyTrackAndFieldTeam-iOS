@@ -75,24 +75,27 @@ class Athlete: NSObject {
         
         var updates = [String: Any]()
         
-        let seasonEnumerator = snapshot.childSnapshot(forPath: Team.SEASONS).children
+        let seasonEnumerator = snapshot.children
         while let seasonSnapshot = seasonEnumerator.nextObject() as? DataSnapshot {
             let seasonId = seasonSnapshot.key
-            let competitionEnumerator = snapshot.childSnapshot(forPath: Team.COMPETITIONS).children
+            let competitionEnumerator = snapshot.children
             while let competitionSnapshot = competitionEnumerator.nextObject() as? DataSnapshot {
-                let competition = Competition(snapshot: competitionSnapshot)
-                let eventResults = competition.results!
-                for eventResult in eventResults {
+                let competitionId = competitionSnapshot.key
+                let eventEnumerator = competitionSnapshot.children
+                while let eventSnapshot = eventEnumerator.nextObject() as? DataSnapshot {
+                    let eventResult = EventResult(snapshot: eventSnapshot)
+                    
                     var eventName = DatabaseUtils.encodeKey(key: eventResult.name!)
                     if eventName.contains(TrackEvent.PENTATHLON) {
                         eventName = TrackEvent.PENTATHLON
                     }
                     
-                    let path = "\(Competition.COMPETITIONS)/\(teamId)/\(seasonId)/\(Competition.RESULTS)/\(competition.id!)\(eventName)\(TrackEvent.RESULTS)/\(eventResult.id!)"
+                    let path = "\(Competition.COMPETITIONS)/\(teamId)/\(seasonId)/\(Competition.RESULTS)/\(competitionId)\(eventName)\(TrackEvent.RESULTS)/\(eventResult.id!)"
+                    
                     if eventResult.athlete != nil { // normal event or multi-event
                         updates["\(path)/\(EventResult.ATHLETE)"] = athlete.toDictBasic()
                     } else { // relay event
-                        let relay = eventResult as! Relay
+                        let relay = Relay(snapshot: eventSnapshot)
                         updates["\(path)/\(Relay.RESULTS)/\(relay.relayLeg!)/\(EventResult.ATHLETE)"] = athlete.toDictBasic()
                     }
                 }
