@@ -98,4 +98,12 @@ class Team: NSObject {
         dict[Team.MANAGER] = managers
         return dict
     }
+    
+    func isMale() -> Bool {
+        return self.gender == Team.MALE
+    }
+    
+    func isOpen() -> Bool {
+        return self.level == Team.COLLEGE || self.level == Team.CLUB_OPEN
+    }
 }

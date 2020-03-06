@@ -17,6 +17,7 @@ class TrackEvent: NSObject {
     var name: String?
     var order: Int?
     var time: Int?
+    var deleted: Bool = false
     var results: [EventResult]?
     
     override init() {
@@ -56,6 +57,13 @@ class TrackEvent: NSObject {
             results = EventResult.sortResults(results: results!, isTimed: isTimed)
         }
     }
+    
+    func toDict() -> [String: Any] {
+        var dict = [String: Any]()
+        dict[TrackEvent.NAME] = name
+        dict[TrackEvent.ORDER] = order
+        return dict
+     }
     
     override func isEqual(_ object: Any?) -> Bool {
         if let object = object as? TrackEvent {

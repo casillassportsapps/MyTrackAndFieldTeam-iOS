@@ -11,7 +11,7 @@ import Firebase
 
 class DatabaseUtils {
     
-    static let realTimeDB = Database.database(url: "https://my-track-and-field-team-firestore.firebaseio.com/").reference()
+    static let realTimeDB = Database.database(url: "https://my-track-and-field-team-testing.firebaseio.com/").reference()
     static let firestoreDB = Firestore.firestore()
     static let storageDB = Storage.storage().reference()
     
@@ -176,7 +176,7 @@ class DatabaseUtils {
         firestoreDB.document("\(Team.TEAM)/\(teamId)/\(Team.ROSTER)/\(athleteId)").setData(athlete.toDict())
     }
     
-    // add athletes from other seasons
+    // add athletes from other seasons by simply adding the season id to the athlete's seasons array
     static func addExistingAthletes(teamId: String, seasonId: String, athletes: [Athlete]) {
         let batch = firestoreDB.batch()
         
@@ -189,6 +189,7 @@ class DatabaseUtils {
     }
     
     // update the athlete and denormalize competitions in realtime database
+    // denormalize should be set to true if the athlete's first name or last name has changed
     static func updateAthlete(teamId: String, athlete: Athlete) {
         var updates = [String: Any]()
         updates[Athlete.FIRST_NAME] = athlete.firstName
@@ -211,10 +212,13 @@ class DatabaseUtils {
         }
     }
     
-    // delete the athlete either from the season or completely from the team
+    // this func deletes the athlete either from the season or completely from the team
+    // first checks if the athlete has results in this season, if so, display eror message below
+    // if the athlete only belong to one season, delete document
+    // if the athlete belongs to multiple seasons, then just remove the current seasonid from seasons array
     static func deleteAthlete(teamId: String, seasonId: String, athlete: Athlete) {
         //  first find out if athlete results exist in this season
-        let path = "\(Athlete.ATHLETES)/\(athlete.id!)/\(Athlete.RESULTS)/\(teamId)/\(Team.SEASONS)/\(seasonId)"
+        let path = "\(Athlete.ATHLETES)/\(athlete.id!)/\(Athlete.RESULTS)/\(teamId)/\(seasonId)"
         realTimeDB.child(path).queryLimited(toFirst: 1).observeSingleEvent(of: .value) { (snapshot) in
             if (snapshot.exists()) {
                 // show error
@@ -231,12 +235,14 @@ class DatabaseUtils {
                 if nukeAthlete { // completely remove athlete from database
                     docRef.delete() { error in
                         if error != nil {
+                            // nuke the athlete node from realtime database
                             realTimeDB.child(Athlete.ATHLETES).child(athlete.id!).removeValue()
+                            // removes athlete photo if there exists one
                             let photoRef = storageDB.child("\(Athlete.PHOTOS)/\(athlete.id!).jpg")
                             photoRef.delete()
                         }
                     }
-                } else { // remove athlete from season
+                } else { // remove athlete just from season
                     docRef.updateData([Athlete.SEASONS: FieldValue.arrayRemove([seasonId])])
                 }
             }
@@ -267,6 +273,7 @@ class DatabaseUtils {
         }
     }
     
+    // updates the competition in the schedule, below are fields that can be updated
     static func updateCompetition(teamId: String, competition: Competition) {
         var updates = [String: Any]()
         updates[Competition.NAME] = competition.name
@@ -280,32 +287,151 @@ class DatabaseUtils {
         }
         
         firestoreDB.document("\(Team.TEAM)/\(teamId)/\(Team.SCHEDULE)/\(competition.id!)")
-            .updateData(updates) { error in
-                if error != nil {
-                    if (competition.denormalize) {
-                        // if denormalizing is necessary, retrieve competitions results of season
-                        // and update the competition fields in the 'athletes' node for competeting athletes
-                        let path = "\(Competition.COMPETITIONS)/\(teamId)/\(competition.seasonId!)/\(Competition.RESULTS)\(competition.id!)"
-                        realTimeDB.child(path).observeSingleEvent(of: .value) { (snapshot) in
-                            let updates = Competition.getPathsToDenormalize(teamId: teamId, competition: competition, snapshot: snapshot)
-                            if updates != nil {
-                                realTimeDB.updateChildValues(updates!)
-                            }
-                        }
-                    }
-                }
-        }
+            .updateData(updates)
     }
     
+    // this func deletes a competition from the schedule, but first checks if there are results in that competition
+    // display error message below if there are results
     static func deleteCompetition(teamId: String, competition: Competition) {
         // first find out if competition results exist before a competition can be deleted
         let path = "\(Competition.COMPETITIONS)/\(teamId)/\(competition.seasonId!)/\(Competition.RESULTS)\(competition.id!)"
         realTimeDB.child(path).queryLimited(toFirst: 1).observeSingleEvent(of: .value) { (snapshot) in
             if (snapshot.exists()) {
                 // show error
-                // Unable to delete meet. Must delete all events and the results of each event.
+                // Unable to delete meet. Must delete all events and the results in this meet.
             } else {
                 firestoreDB.document("\(Team.TEAM)/\(teamId)/\(Team.SCHEDULE)/\(competition.id!)").delete()
+            }
+        }
+    }
+    
+    // this func adds track events to a meet
+    // the 'numOfCurrentEvents' parameter is the number of track events already listed prior to calling this method
+    static func addTrackEvents(teamId: String, isOutdoor: Bool, meet: Competition, trackEvents: [TrackEvent], numOfCurrentEvents: Int) {
+        let seasonId = meet.seasonId!
+        
+        var updates = [String: Any]()
+        
+        let resultsPath = "\(Competition.COMPETITIONS)/\(teamId)/\(seasonId)/\(Competition.RESULTS)/\(meet.id!)"
+        let scoringPath = "\(Competition.COMPETITIONS)/\(teamId)/\(seasonId)/\(Competition.SCORING)/\(meet.id!)"
+        
+        let isTrackDual = meet.isTrackDual(isOutdoor: isOutdoor)
+        
+        var order = numOfCurrentEvents
+        
+        for trackEvent in trackEvents {
+            order += 1
+            
+            // if event name has a ".", change to "*" for the node
+            let nodeKey = encodeKey(key: trackEvent.name!)
+            
+            trackEvent.order = order
+            updates["\(resultsPath)/\(nodeKey)"] = trackEvent.toDict()
+            
+            // if the meet is a dual meet for outdoor track then also put in the events for scoring
+            if isTrackDual {
+                for i in 0..<meet.getOpponentCount() {
+                    let opponent = "\(Competition.OPPONENT)\(i + 1)"
+                    let score = Score(name: trackEvent.name!, order: order)
+                    
+                    updates["\(scoringPath)/\(opponent)/\(nodeKey)"] = score.toDictTrackScoring()
+                }
+            }
+        
+            realTimeDB.updateChildValues(updates)
+        }
+    }
+    
+    // this func deletes track events from a meet, then reorders the rest of the events
+    // the trackEvents parameter should include all track events with the 'isDeleted' field as true only for the events to be deleted
+    // track events cannot be deleted if there are results
+    static func deleteTrackEvents(teamId: String, isOutdoor: Bool, meet: Competition, trackEvents: [TrackEvent]) {
+        let seasonId = meet.seasonId!
+        
+        var updates = [String: Any]()
+        
+        let resultsPath = "\(Competition.COMPETITIONS)/\(teamId)/\(seasonId)/\(Competition.RESULTS)/\(meet.id!)"
+        let scoringPath = "\(Competition.COMPETITIONS)/\(teamId)/\(seasonId)/\(Competition.SCORING)/\(meet.id!)"
+        
+        let isTrackDual = meet.isTrackDual(isOutdoor: isOutdoor)
+        
+        var order = 0
+        for trackEvent in trackEvents {
+            let nodeKey = encodeKey(key: trackEvent.name!)
+            
+            if trackEvent.deleted { // track events that will be deleted from database
+                updates["\(resultsPath)/\(nodeKey)"] = nil
+                if isTrackDual { // also must delete scores for track events that no longer exist
+                    for i in 0..<meet.getOpponentCount() {
+                        let opponent = "\(Competition.OPPONENT)\(i + 1)"
+                        updates["\(scoringPath)/\(opponent)/\(nodeKey)"] = nil
+                    }
+                }
+            } else { // track events that will reorder (update the order field)
+                order += 1
+                
+                updates["\(resultsPath)/\(nodeKey)/\(TrackEvent.ORDER)"] = order
+                if isTrackDual { // also must recorder the scores
+                    for i in 0..<meet.getOpponentCount() {
+                        let opponent = "\(Competition.OPPONENT)\(i + 1)"
+                        updates["\(scoringPath)/\(opponent)/\(nodeKey)/\(Score.ORDER)"] = nil
+                    }
+                }
+            }
+        }
+        
+        realTimeDB.updateChildValues(updates)
+    }
+    
+    // add athletes to an event, the event parameter is the TrackEvent.name
+    static func addEventResult(team: Team, isIndoor: Bool, meet: Competition, event: String, athletes: [Athlete]) {
+        let teamId = team.id!
+        let seasonId = meet.seasonId!
+        
+        let nodeKey = encodeKey(key: event)
+        
+        var updates = [String: Any]()
+        
+        let path = "\(Competition.COMPETITIONS)/\(teamId)/\(seasonId)/\(Competition.RESULTS)/\(meet.id!)/\(nodeKey)/\(TrackEvent.RESULTS)"
+        
+        if TrackEvent.isRelayEvent(name: event) {
+            let eventId = generateId()
+            let relay = Relay(athletes: athletes)
+            relay.id = eventId
+            relay.name = event
+            
+            updates["\(path)/\(eventId)"] = relay.toDict()
+        } else if TrackEvent.isMultiEvent(name: event) {
+            let multiEvents = MultiEvent.getMultiEventList(event: event, isIndoor: isIndoor, isMale: team.isMale(), isOpen: team.isOpen())
+            
+            for athlete in athletes {
+                let eventId = generateId()
+                
+                var name = event
+                if name == TrackEvent.PENTATHLON {
+                    if isIndoor {
+                        name = TrackEvent.PENTATHLON_INDOOR
+                    } else {
+                        name = TrackEvent.PENTATHLON_OUTDOOR
+                    }
+                }
+                
+                let multiEvent = MultiEvent()
+                multiEvent.id = eventId
+                multiEvent.name = name
+                multiEvent.athlete = athlete
+                multiEvent.multiEventResults = multiEvents
+                
+                updates["\(path)/\(eventId)"] = multiEvent.toDict()
+            }
+        } else {
+            for athlete in athletes {
+                let eventId = generateId()
+                let eventResult = EventResult(name: event)
+                eventResult.id = eventId
+                eventResult.athlete = athlete
+                
+                updates["\(path)/\(eventId)"] = eventResult.toDict()
             }
         }
     }

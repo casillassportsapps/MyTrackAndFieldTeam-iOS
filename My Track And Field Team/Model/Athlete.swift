@@ -86,6 +86,8 @@ class Athlete: NSObject {
                     let eventResult = EventResult(snapshot: eventSnapshot)
                     
                     var eventName = DatabaseUtils.encodeKey(key: eventResult.name!)
+                    // since event name is either Pentathlon (Outdoor) or Pentathlon (Indoor) must change the event name
+                    // to pentathlon to get the correct path in the realtime database
                     if eventName.contains(TrackEvent.PENTATHLON) {
                         eventName = TrackEvent.PENTATHLON
                     }

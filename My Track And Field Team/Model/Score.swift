@@ -59,6 +59,24 @@ class Score: NSObject {
         }
     }
     
+    init(name: String, order: Int) {
+        self.name = name
+        self.order = order
+        self.firstPlace = Score.NO_SCORE
+        self.secondPlace = Score.NO_SCORE
+        self.thirdPlace = Score.NO_SCORE
+    }
+    
+    func toDictTrackScoring() -> [String: Any] {
+        var dict = [String: Any]()
+        dict[Score.NAME] = self.name
+        dict[Score.ORDER] = self.order
+        dict[Score.FIRST_PLACE] = self.firstPlace
+        dict[Score.SECOND_PLACE] = self.secondPlace
+        dict[Score.THIRD_PLACE] = self.thirdPlace
+        return dict
+    }
+    
     // get the score model for cross country
     static func getCrossCountryPlaces(snapshot: DataSnapshot) -> Score {
         return Score(snapshot: snapshot, isCrossCountry: true)
