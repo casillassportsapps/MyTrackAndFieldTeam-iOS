@@ -452,10 +452,12 @@ class DatabaseUtils {
     static func deleteEventResult(teamId: String, seasonId: String, meetId: String, event: String, eventResult: EventResult) {
         let eventId = eventResult.id!
         
+        let nodeKey = encodeKey(key: event)
+        
         var updates = [String: Any]()
         
         // delete event result from competition
-        let competitionPath = "\(Competition.COMPETITIONS)/\(teamId)/\(seasonId)/\(Competition.RESULTS)/\(meet.id!)/\(event)/\(TrackEvent.RESULTS)/\(eventId)"
+        let competitionPath = "\(Competition.COMPETITIONS)/\(teamId)/\(seasonId)/\(Competition.RESULTS)/\(meet.id!)/\(nodeKey)/\(TrackEvent.RESULTS)/\(eventId)"
         
         updates[competitionPath] = nil
         
