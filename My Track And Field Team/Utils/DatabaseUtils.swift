@@ -434,5 +434,46 @@ class DatabaseUtils {
                 updates["\(path)/\(eventId)"] = eventResult.toDict()
             }
         }
+        
+        realTimeDB.updateChildValues(updates)
+    }
+    
+    // update event result for non-relay events
+    static func updateEventResult(team: Team, season: Season, meet: Competition, event: String, eventResult: EventResult) {
+        
+    }
+    
+    // update relay result only
+    static func updateRelayResult(team: Team, season: Season, meet: Competition, event: String, eventResult: EventResult) {
+        
+    }
+    
+    // delete event result from competition node and athlete node
+    static func deleteEventResult(teamId: String, seasonId: String, meetId: String, event: String, eventResult: EventResult) {
+        let eventId = eventResult.id!
+        
+        var updates = [String: Any]()
+        
+        // delete event result from competition
+        let competitionPath = "\(Competition.COMPETITIONS)/\(teamId)/\(seasonId)/\(Competition.RESULTS)/\(meet.id!)/\(event)/\(TrackEvent.RESULTS)/\(eventId)"
+        
+        updates[competitionPath] = nil
+        
+        // delete event result from athlete
+        var athleteIds = [String]()
+        if eventResult.isRelay() {
+            let relay = eventResult as! Relay
+            for athlete in relay.getRelayAthletes() {
+                athleteIds.append(athlete.id!)
+            }
+        } else {
+            athleteIds.append(eventResult.athlete!.id!)
+        }
+        
+        for athleteId in athleteIds {
+            updates["\(Athlete.ATHLETES)/\(athleteId)/\(Athlete.RESULTS)/\(teamId)/\(seasonId)/\(meetId)/\(eventId)"] = nil
+        }
+        
+        realTimeDB.updateChildValues(updates)
     }
 }
