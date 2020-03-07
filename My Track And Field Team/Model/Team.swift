@@ -106,4 +106,8 @@ class Team: NSObject {
     func isOpen() -> Bool {
         return self.level == Team.COLLEGE || self.level == Team.CLUB_OPEN
     }
+    
+    func isMetric() -> Bool {
+        return self.unit == Team.METRIC
+    }
 }

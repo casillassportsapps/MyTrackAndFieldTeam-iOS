@@ -439,8 +439,52 @@ class DatabaseUtils {
     }
     
     // update event result for non-relay events
-    static func updateEventResult(team: Team, season: Season, meet: Competition, event: String, eventResult: EventResult) {
+    static func updateEventResult(team: Team, seasonId: String, meetId: String, event: String, eventResult: EventResult) {
+        let result = eventResult.result
+        let eventId = eventResult.id!
         
+        var seed: Any? // seed is any because it can be a Double or an Int (result for multi-event is always an integer)
+        
+        if result == nil {
+            seed = nil
+        } else {
+            seed = EventResult.convertResultToSeed(eventResult: eventResult, isMetric: team.isMetric())
+        }
+        
+        let nodeKey = encodeKey(key: event)
+        
+        var updates = [String: Any]()
+        
+        let competitionPath = "\(Competition.COMPETITIONS)/\(team.id!)/\(seasonId)/\(Competition.RESULTS)/\(meetId)/\(nodeKey)/\(TrackEvent.RESULTS)/\(eventId)"
+        
+        updates["\(competitionPath)/\(EventResult.RESULT)"] = eventResult.result
+        updates["\(competitionPath)/\(EventResult.SEED)"] = seed
+        updates["\(competitionPath)/\(EventResult.ATTEMPTS)"] = eventResult.attempts
+        updates["\(competitionPath)/\(EventResult.TIMES)"] = eventResult.times
+        
+        // probably not necessary, but just in case athlete name didn't denormalize on an update, this will update the names
+        updates["\(competitionPath)/\(EventResult.ATHLETE)/\(Athlete.FIRST_NAME)"] = eventResult.athlete?.firstName
+        updates["\(competitionPath)/\(EventResult.ATHLETE)/\(Athlete.LAST_NAME)"] = eventResult.athlete?.lastName
+        
+        if eventResult.isMultiEvent() {
+            let multiEvent = eventResult as! MultiEvent
+            updates["\(competitionPath)/\(MultiEvent.RESULTS)"] = multiEvent.multiEventDict()
+        }
+        
+        let athletePath = "\(Athlete.ATHLETES)/\(eventResult.athlete!.id!)/\(Athlete.RESULTS)/\(team.id!)/\(seasonId)/\(meetId)/\(eventId)"
+        
+        if result == nil {
+            updates[athletePath] = nil
+        } else {
+            updates["\(athletePath)/\(EventResult.ID)"] = eventId
+            updates["\(athletePath)/\(EventResult.NAME)"] = eventResult.name
+            updates["\(athletePath)/\(EventResult.RESULT)"] = eventResult.result
+            updates["\(athletePath)/\(EventResult.SEED)"] = seed
+            updates["\(athletePath)/\(EventResult.ATTEMPTS)"] = eventResult.attempts
+            updates["\(athletePath)/\(EventResult.TIMES)"] = eventResult.times
+        }
+        
+        realTimeDB.updateChildValues(updates)
     }
     
     // update relay result only

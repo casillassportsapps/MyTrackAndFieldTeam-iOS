@@ -20,6 +20,9 @@ class EventResult: NSObject {
     static let SPLITS = "splits"
     static let SEED = "seed"
     
+    static let RESULT_DQ = "DQ"
+    static let RESULT_FOUL = "FOUL"
+    
     static let DQ_SEED = 99999
     static let FOUL_SEED = -1
     static let UNAVAILABLE_SEED = -2 // should never be used, but just in case of any errors
@@ -84,7 +87,8 @@ class EventResult: NSObject {
     func toDictMultiEvent() -> [String: Any] {
         var dict = [String: Any]()
         dict[EventResult.NAME] = name
-        dict[EventResult.POINTS] = 0
+        dict[EventResult.POINTS] = points
+        dict[EventResult.RESULT] = result
         return dict
     }
     
@@ -112,53 +116,75 @@ class EventResult: NSObject {
         return times?["final"]
     }
     
+    func isMultiEvent() -> Bool {
+        return TrackEvent.isMultiEvent(name: self.name ?? "")
+    }
+    
     func isRelay() -> Bool {
         return TrackEvent.isRelayEvent(name: self.name ?? "")
     }
     
-    static func compareResults(eventResult1: EventResult, eventResult2: EventResult, isTimed: Bool) -> Int {
-        if eventResult1.name == eventResult2.name {
-            return 0;
-        }
+    // converts the time string into a Double for the seed field
+    // ie: 1:36.89 to 96.89 or 9.583 to 9.583
+    static func convertTimeToSeconds(time: String, decimalPlaces: Int) -> Double {
+        var minutes = 0
+        var seconds: Double
+        let rounding = pow(10.0, Double(decimalPlaces))
         
-        var seed1 = eventResult1.seed
-        if seed1 == nil {
-            seed1 = Double(isTimed ? DQ_SEED : FOUL_SEED)
-        }
-        
-        var seed2 = eventResult2.seed
-        if seed2 == nil {
-            seed2 = Double(isTimed ? DQ_SEED : FOUL_SEED)
-        }
-        
-        if (seed1 == seed2) { // if seeds are the same, compare athletes or relay team
-            let athlete1 = eventResult1.athlete
-            let athlete2 = eventResult2.athlete
-            
-            if athlete1 != nil && athlete2 != nil {
-                return 0 // return compare athlete.lastNameFirstName case insensitive
-            } else if eventResult1.isRelay() && eventResult2.isRelay() {
-                let relay1 = eventResult1 as? Relay
-                let relay2 = eventResult2 as? Relay
-                if relay1 != nil && relay2 != nil {
-                    return 0 // return compare relay.team case insensitive
-                }
-            }
+        if time.contains(":") {
+            let split = time.split(separator: ":")
+            minutes = Int(split[0])!
+            seconds = Double(split[1])!
         } else {
-            return isTimed ? Int(seed1! - seed2!) : Int(seed2! - seed1!)
+            seconds = Double(time)!
         }
         
-        return 0
+        let seed: Double = seconds + Double(minutes * 60)
+        
+        return round(rounding * seed) / rounding
     }
     
-    static func sortResults(results: [EventResult], isTimed: Bool) -> [EventResult] {
-        var sortedResults = [EventResult]()
-        if isTimed {
-            sortedResults = results.sorted(by: { $0.seed ?? Double(EventResult.DQ_SEED) < $1.seed ?? Double(EventResult.DQ_SEED) })
-        } else {
-            sortedResults = results.sorted(by: { $0.seed ?? Double(EventResult.FOUL_SEED) > $1.seed ?? Double(EventResult.FOUL_SEED) })
+    // same as above but with 2 decimal places by default
+    static func convertTimeToSeconds(time: String) -> Double {
+        return convertTimeToSeconds(time: time, decimalPlaces: 2)
+    }
+    
+    // converts the measurement result string into a Double for the seed field up to 4 decimal places
+    // the Double value will be in meters to be able to compare imperial and metric event results
+    // ie: 10'-6" to 3.2004
+    static func convertFeetToSeed(measurement: String) -> Double {
+        let split = measurement.split(separator: "-")
+        let feet = Double(split[0])!
+        let inches = Double(split[1])!
+        return ((feet + inches / 12) * 3048) / 10000
+    }
+    
+    static func convertResultToSeed(eventResult: EventResult, isMetric: Bool) -> Double {
+        return convertResultToSeed(event: eventResult.name!, result: eventResult.result!, isMetric: isMetric)
+    }
+    
+    static func convertResultToSeed(event: String, result: String, isMetric: Bool) -> Double {
+        if result == RESULT_DQ {
+            return Double(DQ_SEED)
         }
-        return sortedResults
+        
+        if result == RESULT_FOUL {
+            return Double(FOUL_SEED)
+        }
+        
+        if TrackEvent.isEventTimed(name: event) {
+            return convertTimeToSeconds(time: result)
+        } else if TrackEvent.isFieldEvent(name: event) {
+            if isMetric { // metric result is already in meters so just cast
+                return Double(result)!
+            } else {
+                return convertFeetToSeed(measurement: result)
+            }
+        } else if TrackEvent.isMultiEvent(name: event) { // points result is already an integer
+            return Double(result)!
+        }
+        
+        return Double(UNAVAILABLE_SEED)
     }
     
     override func isEqual(_ object: Any?) -> Bool {

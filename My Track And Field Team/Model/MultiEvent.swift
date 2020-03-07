@@ -39,6 +39,16 @@ class MultiEvent : EventResult {
         dict[MultiEvent.RESULTS] = resultsDict
         return dict
     }
+    
+    func multiEventDict() -> [String: Any] {
+        var dict = [String: Any]()
+        
+        for eventResult in multiEventResults! {
+            dict[eventResult.name!] = eventResult.toDictMultiEvent()
+        }
+        
+        return dict
+    }
 
     static func getMultiEventList(event: String, isIndoor: Bool, isMale: Bool, isOpen: Bool) -> [EventResult] {
         var eventResults = [EventResult]()
