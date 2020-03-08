@@ -200,7 +200,7 @@ class DatabaseUtils {
         docRef.updateData(updates) { error in
             if error != nil {
                 if athlete.denormalize {
-                    let path = "\(Athlete.ATHLETES)/\(athlete.id!)/\(Athlete.RESULTS)/\(teamId)"
+                    let path = "\(Athlete.ATHLETES)/\(teamId)/\(athlete.id!)/\(Athlete.RESULTS)"
                     realTimeDB.child(path).observeSingleEvent(of: .value) { (snapshot) in
                         let updates = Athlete.getPathsToDenormalize(teamId: teamId, athlete: athlete, snapshot: snapshot)
                         if updates != nil {
@@ -218,7 +218,7 @@ class DatabaseUtils {
     // if the athlete belongs to multiple seasons, then just remove the current seasonid from seasons array
     static func deleteAthlete(teamId: String, seasonId: String, athlete: Athlete) {
         //  first find out if athlete results exist in this season
-        let path = "\(Athlete.ATHLETES)/\(athlete.id!)/\(Athlete.RESULTS)/\(teamId)/\(seasonId)"
+        let path = "\(Athlete.ATHLETES)/\(teamId)/\(athlete.id!)/\(Athlete.RESULTS)/\(seasonId)"
         realTimeDB.child(path).queryLimited(toFirst: 1).observeSingleEvent(of: .value) { (snapshot) in
             if (snapshot.exists()) {
                 // show error
@@ -236,7 +236,7 @@ class DatabaseUtils {
                     docRef.delete() { error in
                         if error != nil {
                             // nuke the athlete node from realtime database
-                            realTimeDB.child(Athlete.ATHLETES).child(athlete.id!).removeValue()
+                            realTimeDB.child(Athlete.ATHLETES).child(teamId).child(athlete.id!).removeValue()
                             // removes athlete photo if there exists one
                             let photoRef = storageDB.child("\(Athlete.PHOTOS)/\(athlete.id!).jpg")
                             photoRef.delete()
