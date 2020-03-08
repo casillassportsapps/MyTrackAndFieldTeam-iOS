@@ -48,27 +48,6 @@ class Season: NSObject {
         self.desc = dict[Season.DESCRIPTION] as? String
     }
     
-    // used with realtime database to load a season from athletes node (athletes' personal result data)
-    init(snapshot: DataSnapshot) {
-        let dict = snapshot.value as! [String: Any]
-        self.id = dict[Season.ID] as? String ?? ""
-        self.name = dict[Season.NAME] as? String ?? ""
-        self.year = dict[Season.YEAR] as? Int ?? 0
-        
-        if snapshot.hasChild(Season.COMPETITIONS) {
-            competitions = [Competition]()
-            
-            let competitionsSnapshot = snapshot.childSnapshot(forPath: Season.COMPETITIONS)
-            let competitionsEnumerator = competitionsSnapshot.children
-             while let competitionSnapshot = competitionsEnumerator.nextObject() as? DataSnapshot {
-                let competition = Competition(snapshot: competitionSnapshot)
-                competitions?.append(competition)
-            }
-            
-            competitions?.sort(by: {$0.dateTime! < $1.dateTime!})
-        }
-    }
-    
     func toDict() -> [String: Any] {
         var dict = [String: Any]()
         dict[Season.ID] = id

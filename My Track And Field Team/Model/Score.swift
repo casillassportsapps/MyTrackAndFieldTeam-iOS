@@ -67,6 +67,13 @@ class Score: NSObject {
         self.thirdPlace = Score.NO_SCORE
     }
     
+    func toDictCrossCountryScoring() -> [String: Any] {
+        var dict = [String: Any]()
+        dict[Score.MY_PLACES] = self.myPlaces
+        dict[Score.OPPONENT_PLACES] = self.myPlaces
+        return dict
+    }
+    
     func toDictTrackScoring() -> [String: Any] {
         var dict = [String: Any]()
         dict[Score.NAME] = self.name

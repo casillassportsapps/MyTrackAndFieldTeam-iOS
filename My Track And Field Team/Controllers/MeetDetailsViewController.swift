@@ -134,7 +134,7 @@ class MeetDetailsViewController: UIViewController {
 
     // singleQueryCompetitionData not used, just practice
     func singleQueryCompetitionData() {
-        let ref = Database.database(url: "https://my-track-and-field-team-firestore.firebaseio.com/").reference()
+        let ref = Database.database(url: "https://my-track-and-field-team-testing.firebaseio.com/").reference()
         
         let teamId = "-LICDiRCU9HzswMnhCzt"
         let seasonId = "-Lj8rV0t-rtmWoKFAqVU"
@@ -157,7 +157,7 @@ class MeetDetailsViewController: UIViewController {
                         print("\(athlete.fullName() ?? "") \(eventResult.result ?? "")")
                         if eventResultSnapshot.hasChild(MultiEvent.RESULTS) { // multi-event
                             let multiEvent = MultiEvent(snapshot: eventResultSnapshot)
-                            for eventResult in multiEvent.multiEventResults!.values {
+                            for eventResult in multiEvent.multiEventResults! {
                                 print("\(eventResult.name ?? "") \(eventResult.result ?? "") \(eventResult.points ?? 0)")
                             }
                         }

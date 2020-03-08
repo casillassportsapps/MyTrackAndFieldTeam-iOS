@@ -156,7 +156,7 @@ class EventResult: NSObject {
         let split = measurement.split(separator: "-")
         let feet = Double(split[0])!
         let inches = Double(split[1])!
-        return ((feet + inches / 12) * 3048) / 10000
+        return round((feet + inches / 12) * 3048) / 10000
     }
     
     static func convertResultToSeed(eventResult: EventResult, isMetric: Bool) -> Double {

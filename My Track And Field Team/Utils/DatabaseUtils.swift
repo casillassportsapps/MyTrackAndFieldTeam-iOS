@@ -402,7 +402,7 @@ class DatabaseUtils {
             
             updates["\(path)/\(eventId)"] = relay.toDict()
         } else if TrackEvent.isMultiEvent(name: event) {
-            let multiEvents = MultiEvent.getMultiEventList(event: event, isIndoor: isIndoor, isMale: team.isMale(), isOpen: team.isOpen())
+            let multiEvents = MultiEvent.initMultiEventResults(multiEvent: event, isIndoor: isIndoor, isMale: team.isMale(), isOpen: team.isOpen())
             
             for athlete in athletes {
                 let eventId = generateId()
@@ -445,9 +445,10 @@ class DatabaseUtils {
         
         var seed: Any? // seed is any because it can be a Double or an Int (result for multi-event is always an integer)
         
-        if result == nil {
+        if result == nil { // if input is entered with no result (blank), then seed should be removed from competition
             seed = nil
         } else {
+            // method to convert any type of result to a seed
             seed = EventResult.convertResultToSeed(eventResult: eventResult, isMetric: team.isMetric())
         }
         
@@ -455,6 +456,7 @@ class DatabaseUtils {
         
         var updates = [String: Any]()
         
+        // path to competition data
         let competitionPath = "\(Competition.COMPETITIONS)/\(team.id!)/\(seasonId)/\(Competition.RESULTS)/\(meetId)/\(nodeKey)/\(TrackEvent.RESULTS)/\(eventId)"
         
         updates["\(competitionPath)/\(EventResult.RESULT)"] = eventResult.result
@@ -466,19 +468,20 @@ class DatabaseUtils {
         updates["\(competitionPath)/\(EventResult.ATHLETE)/\(Athlete.FIRST_NAME)"] = eventResult.athlete?.firstName
         updates["\(competitionPath)/\(EventResult.ATHLETE)/\(Athlete.LAST_NAME)"] = eventResult.athlete?.lastName
         
-        if eventResult.isMultiEvent() {
+        if eventResult.isMultiEvent() { // if the event is a multi-event, update multi-event results
             let multiEvent = eventResult as! MultiEvent
             updates["\(competitionPath)/\(MultiEvent.RESULTS)"] = multiEvent.multiEventDict()
         }
         
-        let athletePath = "\(Athlete.ATHLETES)/\(eventResult.athlete!.id!)/\(Athlete.RESULTS)/\(team.id!)/\(seasonId)/\(meetId)/\(eventId)"
+        // path to athlete
+        let athletePath = "\(Athlete.ATHLETES)/\(team.id!)/\(eventResult.athlete!.id!)/\(Athlete.RESULTS)/\(seasonId)/\(meetId)/\(eventId)"
         
         if result == nil {
-            updates[athletePath] = nil
-        } else {
+            updates[athletePath] = nil // if no result, remove the path from the athlete
+        } else { // populate athlete path with event result
             updates["\(athletePath)/\(EventResult.ID)"] = eventId
             updates["\(athletePath)/\(EventResult.NAME)"] = eventResult.name
-            updates["\(athletePath)/\(EventResult.RESULT)"] = eventResult.result
+            updates["\(athletePath)/\(EventResult.RESULT)"] = result
             updates["\(athletePath)/\(EventResult.SEED)"] = seed
             updates["\(athletePath)/\(EventResult.ATTEMPTS)"] = eventResult.attempts
             updates["\(athletePath)/\(EventResult.TIMES)"] = eventResult.times
@@ -488,8 +491,63 @@ class DatabaseUtils {
     }
     
     // update relay result only
-    static func updateRelayResult(team: Team, season: Season, meet: Competition, event: String, eventResult: EventResult) {
+    static func updateRelayResult(team: Team, seasonId: String, meetId: String, event: String, relay: Relay, athletesRemoved: [String]?) {
+        let result = relay.result
+        let eventId = relay.id!
         
+        var seed: Any? // seed is any because it can be a Double or an Int (result for multi-event is always an integer)
+        
+        if result == nil { // if input is entered with no result (blank), then seed should be removed from competition
+            seed = nil
+        } else {
+            // method to convert any type of result to a seed
+            seed = EventResult.convertResultToSeed(eventResult: relay, isMetric: team.isMetric())
+        }
+        
+        var updates = [String: Any]()
+        
+        // path to competition data, no need to encode the event since relay names are guaranteed
+        let competitionPath = "\(Competition.COMPETITIONS)/\(team.id!)/\(seasonId)/\(Competition.RESULTS)/\(meetId)/\(event)/\(TrackEvent.RESULTS)/\(eventId)"
+        
+        updates["\(competitionPath)/\(EventResult.RESULT)"] = result
+        updates["\(competitionPath)/\(EventResult.SEED)"] = seed
+        updates["\(competitionPath)/\(Relay.TEAM)"] = relay.team
+        
+        var order = 0
+        for leg in relay.relayResults!.values { // write to each leg in relayResults node
+            order += 1
+            
+            let relayLeg = "\(Relay.Leg.LEG)\(order)" // leg1, leg2, leg3, leg4
+            
+            updates["\(competitionPath)/\(Relay.RESULTS)/\(relayLeg)/\(Relay.Leg.ATHLETE)"] = leg.athlete!.toDictBasic()
+            updates["\(competitionPath)/\(Relay.RESULTS)/\(relayLeg)/\(Relay.Leg.SPLIT)"] = leg.split
+            
+            // path to athlete
+            let athletePath = "\(Athlete.ATHLETES)/\(team.id!)/\(leg.athlete!.id!)/\(Athlete.RESULTS)/\(seasonId)/\(meetId)/\(eventId)"
+            
+            if result == nil {
+                updates[athletePath] = nil // if no result, remove the path from the athlete
+            } else { // populate athlete path with event result
+                updates["\(athletePath)/\(EventResult.ID)"] = eventId
+                updates["\(athletePath)/\(EventResult.NAME)"] = relay.name
+                updates["\(athletePath)/\(EventResult.RESULT)"] = result
+                updates["\(athletePath)/\(EventResult.SEED)"] = seed
+                updates["\(athletePath)/\(Relay.RELAY_LEG)\(Relay.Leg.LEG)"] = relayLeg
+                updates["\(athletePath)/\(Relay.RELAY_LEG)\(Relay.Leg.SPLIT)"] = leg.split
+            }
+        }
+        
+        // it is unlikley, but possible that an athlete can be replaced by another athlete in a relay after results were recorded
+        // maybe two athletes have the same last name and the coach put the wrong one in and noticed it after the results were recorded
+        // below loop will remove the event from the athlete's path who are no longer in the relay
+        if athletesRemoved != nil {
+            for athleteId in athletesRemoved! {
+                let athletePath = "\(Athlete.ATHLETES)/\(team.id!)/\(athleteId)/\(Athlete.RESULTS)/\(seasonId)/\(meetId)/\(eventId)"
+                updates[athletePath] = nil
+            }
+        }
+        
+        realTimeDB.updateChildValues(updates)
     }
     
     // delete event result from competition node and athlete node
@@ -500,9 +558,9 @@ class DatabaseUtils {
         
         var updates = [String: Any]()
         
-        // delete event result from competition
+        // competition path
         let competitionPath = "\(Competition.COMPETITIONS)/\(teamId)/\(seasonId)/\(Competition.RESULTS)/\(meet.id!)/\(nodeKey)/\(TrackEvent.RESULTS)/\(eventId)"
-        
+        // delete event result from competition
         updates[competitionPath] = nil
         
         // delete event result from athlete
@@ -517,7 +575,59 @@ class DatabaseUtils {
         }
         
         for athleteId in athleteIds {
-            updates["\(Athlete.ATHLETES)/\(athleteId)/\(Athlete.RESULTS)/\(teamId)/\(seasonId)/\(meetId)/\(eventId)"] = nil
+            let athletePath = "\(Athlete.ATHLETES)/\(teamId)/\(athleteId)/\(Athlete.RESULTS)/\(seasonId)/\(meetId)/\(eventId)"
+            updates[athletePath] = nil
+        }
+        
+        realTimeDB.updateChildValues(updates)
+    }
+    
+    // updates or deletes an athlete note/comment in the competition and athlete event result
+    static func updateComment(teamId: String, seasonId: String, meetId: String, event: String, eventResult: EventResult) {
+        let eventId = eventResult.id!
+        
+        let nodeKey = encodeKey(key: event)
+        
+        var updates = [String: Any]()
+        
+        // competition path
+        let competitionPath = "\(Competition.COMPETITIONS)/\(teamId)/\(seasonId)/\(Competition.RESULTS)/\(meet.id!)/\(nodeKey)/\(TrackEvent.RESULTS)/\(eventId)"
+        updates["\(competitionPath)/\(EventResult.COMMENT)"] = eventResult.comment
+        
+        // only non-relay athletes receive the comment in the athlete data
+        if eventResult.athlete != nil {
+            let athletePath = "\(Athlete.ATHLETES)/\(teamId)/\(eventResult.athlete!.id!)/\(Athlete.RESULTS)/\(seasonId)/\(meetId)/\(eventId)"
+            updates["\(athletePath)/\(EventResult.COMMENT)"] = eventResult.comment
+        }
+        
+        realTimeDB.updateChildValues(updates)
+    }
+    
+    // updates splits field for certain distance events and all cross country races in a competition
+    static func updateSplits(teamId: String, seasonId: String, meetId: String, event: String, eventResult: EventResult) {
+        let eventId = eventResult.id!
+        
+        let nodeKey = encodeKey(key: event)
+        
+        var updates = [String: Any]()
+        
+        // competition path
+        let competitionPath = "\(Competition.COMPETITIONS)/\(teamId)/\(seasonId)/\(Competition.RESULTS)/\(meet.id!)/\(nodeKey)/\(TrackEvent.RESULTS)/\(eventId)"
+        updates["\(competitionPath)/\(EventResult.SPLITS)"] = eventResult.splits
+        
+        realTimeDB.updateChildValues(updates)
+    }
+    
+    // updates the score field of a track meet or cross country meet
+    static func updateScore(teamId: String, season: Season, meetId: String, opponent: String, score: Score) {
+        var updates = [String: Any]()
+        
+        // competition path - scoring
+        let competitionPath = "\(Competition.COMPETITIONS)/\(teamId)/\(season.id!)/\(Competition.SCORING)/\(meet.id!)/\(opponent)"
+        if season.isCrossCountry() {
+            updates["\(competitionPath)"] = score.toDictCrossCountryScoring()
+        } else {
+            updates["\(competitionPath)/\(score.name!)"] = score.toDictTrackScoring()
         }
         
         realTimeDB.updateChildValues(updates)
