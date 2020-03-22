@@ -300,7 +300,11 @@ class TrackEvent: NSObject {
     // array of all relay events
     static func getRelayEvents() -> [String] {
         var events = [String]()
+        events.append(SHUTTLE_HURDLE_RELAY_55)
+        events.append(SHUTTLE_HURDLE_RELAY_60)
         events.append(FOUR_BY_ONE_HUNDRED)
+        events.append(SHUTTLE_HURDLE_RELAY_100)
+        events.append(SHUTTLE_HURDLE_RELAY_110)
         events.append(FOUR_BY_TWO_HUNDRED)
         events.append(FOUR_BY_FOUR_HUNDRED)
         events.append(FOUR_BY_EIGHT_HUNDRED)
@@ -310,10 +314,6 @@ class TrackEvent: NSObject {
         events.append(SIXTEEN_HUNDRED_MEDLEY_RELAY)
         events.append(SWEDISH_MEDLEY_RELAY)
         events.append(DISTANCE_MEDLEY_RELAY)
-        events.append(SHUTTLE_HURDLE_RELAY_55)
-        events.append(SHUTTLE_HURDLE_RELAY_60)
-        events.append(SHUTTLE_HURDLE_RELAY_100)
-        events.append(SHUTTLE_HURDLE_RELAY_110)
         return events
     }
     
