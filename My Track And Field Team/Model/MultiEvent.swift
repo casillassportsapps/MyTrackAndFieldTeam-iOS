@@ -115,7 +115,7 @@ class MultiEvent : EventResult {
             var c: Double = 0
             
             var points: Int = 0
-            var isMeasuredInCentimeters: Bool = false
+            var isMeasuredInCentimeters: Bool = true
             
             switch event {
             case TrackEvent.SIXTY_METERS:
@@ -124,14 +124,14 @@ class MultiEvent : EventResult {
                 c = 1.81
                 break
             case TrackEvent.SIXTY_HURDLES:
-                a = isMale ? 25.4347 : 17.8587
-                b = isMale ? 18.00 : 21.050
-                c = 1.81
-            break
-            case TrackEvent.ONE_HUNDRED_METERS:
                 a = isMale ? 20.5173 : 20.0479
                 b = isMale ? 15.50 : 17.00
-                c = isMale ? 1.92 : 1.835
+                c = isMale ? 1.892 : 1.835
+            break
+            case TrackEvent.ONE_HUNDRED_METERS:
+                a = isMale ? 25.4347 : 20.0479
+                b = isMale ? 18.00 : 17.00
+                c = isMale ? 1.81 : 1.835
                 break
             case TrackEvent.ONE_HUNDRED_HURDLES:
                 a = 9.23076
@@ -141,11 +141,11 @@ class MultiEvent : EventResult {
             case TrackEvent.ONE_HUNDRED_TEN_HURDLES:
                 a = 5.74352
                 b = 28.50
-                c = 1.85
+                c = 1.92
                 break
             case TrackEvent.TWO_HUNDRED_METERS:
                 a = isMale ? 5.8425 : 4.99087
-                b = isMale ? 88.00 : 42.50
+                b = isMale ? 38.00 : 42.50
                 c = 1.81
                 break
             case TrackEvent.FOUR_HUNDRED_METERS:
@@ -175,7 +175,7 @@ class MultiEvent : EventResult {
             break
             case TrackEvent.HIGH_JUMP:
                 a = isMale ? 0.8465 : 1.84523
-                b = isMale ? 75.00 : 75.00
+                b = 75.00
                 c = isMale ? 1.42 : 1.348
             break
             case TrackEvent.POLE_VAULT:
@@ -187,19 +187,19 @@ class MultiEvent : EventResult {
                 a = isMale ? 51.39 : 56.0211
                 b = isMale ? 1.50 : 1.50
                 c = 1.05
-                isMeasuredInCentimeters = true
+                isMeasuredInCentimeters = false
             break
             case TrackEvent.DISCUS:
                 a = isMale ? 12.91 : 12.3311
                 b = isMale ? 4.00 : 3.00
                 c = 1.10
-                isMeasuredInCentimeters = true
+                isMeasuredInCentimeters = false
             break
             case TrackEvent.JAVELIN:
                 a = isMale ? 10.14 : 15.9803
                 b = isMale ? 7.00 : 3.580
                 c = isMale ? 1.08 : 1.04
-                isMeasuredInCentimeters = true
+                isMeasuredInCentimeters = false
             break
             default:
                 return 0
