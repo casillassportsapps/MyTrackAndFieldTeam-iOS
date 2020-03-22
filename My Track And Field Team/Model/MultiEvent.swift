@@ -180,12 +180,12 @@ class MultiEvent : EventResult {
             break
             case TrackEvent.POLE_VAULT:
                 a = isMale ? 0.2797 : 0.44125
-                b = isMale ? 100.00 : 100.00
+                b = 100.00
                 c = 1.35
             break
             case TrackEvent.SHOT_PUT:
                 a = isMale ? 51.39 : 56.0211
-                b = isMale ? 1.50 : 1.50
+                b = 1.50
                 c = 1.05
                 isMeasuredInCentimeters = false
             break
