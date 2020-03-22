@@ -126,7 +126,7 @@ class MultiEvent : EventResult {
             case TrackEvent.SIXTY_HURDLES:
                 a = isMale ? 20.5173 : 20.0479
                 b = isMale ? 15.50 : 17.00
-                c = isMale ? 1.892 : 1.835
+                c = isMale ? 1.92 : 1.835
             break
             case TrackEvent.ONE_HUNDRED_METERS:
                 a = isMale ? 25.4347 : 20.0479
