@@ -58,13 +58,13 @@ class DatabaseUtils {
         }
     }
     
-    // update team with only name, password, or unit fields
+    // update team with only name or password fields
     static func updateTeam(team: Team) {
         var updates = [String: Any]()
         updates[Team.NAME] = team.name
         let password = team.password?.trimmingCharacters(in: .whitespacesAndNewlines)
         updates[Team.PASSWORD] = password?.isEmpty ?? true ? FieldValue.delete() : password
-        updates[Team.UNIT] = team.unit
+
         
         firestoreDB.document("\(Team.TEAM)/\(team.id!)").updateData(updates)
     }
