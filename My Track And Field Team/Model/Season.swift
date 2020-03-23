@@ -69,6 +69,10 @@ class Season: NSObject {
         return name == Season.OUTDOOR
     }
     
+    func isManager(id: String) -> Bool {
+        return managers != nil && managers!.contains(id)
+    }
+    
     func getSeasonName() -> String {
         if isCrossCountry() {
             return "Cross Country"

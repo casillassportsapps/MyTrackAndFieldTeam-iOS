@@ -166,8 +166,8 @@ class DatabaseUtils {
                         batch.updateData([Athlete.SEASONS : FieldValue.arrayRemove([season.id!])], forDocument: athleteRef)
                     }
                     
-                    batch.commit() // batch all updates and removals in one call
                     realTimeDB.updateChildValues(updates) // remove athete from realtime database in one batch call
+                    batch.commit() // batch all updates and removals in one call
                 }
             } else {
                 // if there is no roster then commit right away
@@ -677,5 +677,44 @@ class DatabaseUtils {
         }
         
         realTimeDB.updateChildValues(updates)
+    }
+    
+    // delete manager from team
+    static func deleteManager(team: Team, user: User) {
+        let teamId = team.id!
+        let userId = user.id!
+        
+        let batch = firestoreDB.batch()
+        
+        // removes the team from the user's teams field
+        let userRef = firestoreDB.document("\(User.USER)/\(userId)")
+        batch.updateData(["\(User.TEAMS).\(teamId)" : FieldValue.delete()], forDocument: userRef)
+        
+        // removes the user from the managers array field, if there will be no managers after deletion, then delete whole field
+        let teamRef = firestoreDB.document("\(Team.TEAM)/\(teamId)")
+        let value = team.managers!.count > 1 ? FieldValue.arrayRemove([userId]) : FieldValue.delete()
+        batch.updateData([Team.MANAGERS : value], forDocument: teamRef)
+        
+        // now must remove user from access node in realtime database
+        var updates = [String : Any]()
+        let accessPath = "\(Access.ACCESS)/\(teamId)"
+        
+        // removes user as team manager
+        updates["\(accessPath)/\(Access.MANAGERS)/\(userId)"] = nil // NSnull.self ???
+        
+        // removes user as season manager
+        let seasons = team.seasons
+        if seasons != nil { // this should always be true, but always check in case
+            for (_, season) in seasons! {
+                // if user is manager of any season, remove the user id
+                if season.isManager(id: userId) {
+                    updates["\(accessPath)/\(Access.SEASONS)/\(season.id!)/\(Access.MANAGERS)/\(userId)"] = nil // NSnull.self ???
+                    
+                }
+            }
+        }
+        
+        realTimeDB.updateChildValues(updates)
+        batch.commit()
     }
 }
