@@ -107,29 +107,75 @@ class DatabaseUtils {
         teamRef.updateData(fields)
     }
     
-    // update season
+    // update season, you will somehow need to implement a completion listener or someway to tell when the data has finished updating
     static func updateSeason(teamId: String, season: Season) {
-        let seasonId = season.id
-        
-        var updates = [String: Any]()
-        updates["\(Team.SEASONS).\(seasonId!).\(Season.NAME)"] = season.name
-        
         let desc = season.desc?.trimmingCharacters(in: .whitespacesAndNewlines)
-        updates["\(Team.SEASONS).\(seasonId!).\(Season.DESCRIPTION)"] = desc?.isEmpty ?? true ? FieldValue.delete() : desc
         
         let teamRef = firestoreDB.document("\(Team.TEAM)/\(teamId)")
-        teamRef.updateData(updates)
+        teamRef.updateData(["\(Team.SEASONS).\(season.id!).\(Season.DESCRIPTION)" : desc?.isEmpty ?? true ? FieldValue.delete() : desc!])
     }
     
     // delete season from team
-    static func deleteSeason(teamId: String, season: Season) {
+    // you will somehow need to implement a completion listener or someway to tell when the data has finished updating
+    // maybe some kind of asynchronous call?
+    // this is not tested, I would test this with a season that has 2 athletes, one that belongs to just the current season
+    // and one that belongs to multiple seasons
+    static func deleteSeason(team: Team, season: Season) {
+        let batch = firestoreDB.batch() // prepare for batch update in firestore
         
+        let teamPath = "\(Team.TEAM)/\(team.id!)"
+        let teamRef = firestoreDB.document(teamPath)
+        var field = Team.SEASONS
+        // if there are other seasons, just delete the {seasonid} key otherwise delete the 'seasons' field from the team
+        if team.seasons!.count > 1 {
+            field = "\(field).\(season.id!)"
+        }
         
+        batch.updateData([field : FieldValue.delete()], forDocument: teamRef)
         
+        // now if there is a roster in the season, must delete the season from the athletes' 'seasons' field
+        let rosterRef = firestoreDB.collection("\(teamPath)/\(Team.ROSTER)").whereField(Athlete.SEASONS, arrayContains: season.id!)
+        rosterRef.getDocuments() { (querySnapshot, err) in
         
-        
+            if querySnapshot!.count > 0 {
+                for document in querySnapshot!.documents {
+                    // get athlete
+                    let athlete = Athlete(document: document)
+                    // remove the deleted season from athlete 'seasons' field
+                    var seasons = athlete.seasons!
+                    let index = seasons.firstIndex(of: seasonId)!
+                    seasons.remove(at: index)
+                    
+                    let nukeAthlete = seasons.isEmpty
+                    
+                    let athleteRef = firestoreDB.document("\(teamRef)/\(Team.ROSTER)/\(athlete.id!)")
+                    var updates = [String: Any]()
+                    
+                    // completely remove athlete from database
+                    if nukeAthlete {
+                        // delete the athlete document because athlete no longer belongs to any season
+                        batch.deleteDocument(athleteRef)
+                        // delete the athlete from realtime database (in case there's any data lingering)
+                        updates["\(Athlete.ATHLETES)/\(team.id!)/\(athlete.id!)"] = nil // NSnull.self ????
+                        realTimeDB.child(Athlete.ATHLETES).child(teamId).child(athlete.id!).removeValue()
+                        // removes athlete photo if one exists
+                        let photoRef = storageDB.child("\(Athlete.PHOTOS)/\(athlete.id!).jpg")
+                        photoRef.delete()
+                    } else {
+                        // just remove season id from athlete with update
+                        batch.updateData([Athlete.SEASONS : FieldValue.arrayRemove([season.id!])], forDocument: athleteRef)
+                    }
+                    
+                    batch.commit() // batch all updates and removals in one call
+                    realTimeDB.updateChildValues(updates) // remove athete from realtime database in one batch call
+                }
+            } else {
+                // if there is no roster then commit right away
+                batch.commit()
+            }
+        }
     }
-    
+
     // give team owner access in realtime database
     static func allowTeamOwnerAccess(teamId: String, userId: String) {
         realTimeDB.child("\(Access.ACCESS)/\(teamId)/\(Access.OWNER)").setValue(userId)
@@ -213,8 +259,8 @@ class DatabaseUtils {
     }
     
     // this func deletes the athlete either from the season or completely from the team
-    // first checks if the athlete has results in this season, if so, display eror message below
-    // if the athlete only belong to one season, delete document
+    // first checks if the athlete has results in this season, if so, display error message below
+    // if the athlete only belongs to one season, delete document
     // if the athlete belongs to multiple seasons, then just remove the current seasonid from seasons array
     static func deleteAthlete(teamId: String, seasonId: String, athlete: Athlete) {
         //  first find out if athlete results exist in this season
