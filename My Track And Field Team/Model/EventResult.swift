@@ -38,6 +38,7 @@ class EventResult: NSObject {
     var seed: Double?
     
     var athlete: Athlete?
+    var leg: Relay.Leg? // used for athlete results
     
     var splits: [String]?
     var attempts: [String]?
@@ -64,9 +65,14 @@ class EventResult: NSObject {
         self.points = dict[EventResult.POINTS] as? Int
         self.seed = dict[EventResult.SEED] as? Double
         
-        if (snapshot.hasChild(EventResult.ATHLETE)) {
+        if snapshot.hasChild(EventResult.ATHLETE) {
             let athleteSnapshot = snapshot.childSnapshot(forPath: EventResult.ATHLETE)
             self.athlete = Athlete(snapshot: athleteSnapshot)
+        }
+        
+        if snapshot.hasChild(Relay.RELAY_LEG) {
+            let legSnapshot = snapshot.childSnapshot(forPath: Relay.RELAY_LEG)
+            self.leg = Relay.Leg(snapshot: legSnapshot)
         }
         
         self.splits = dict[EventResult.SPLITS] as? [String]
@@ -194,4 +200,62 @@ class EventResult: NSObject {
             return false
         }
     }
+    
+    static func sortResults(results: [EventResult], isTimed: Bool) -> [EventResult] {
+       func isNumber(result: String) -> Bool {
+           let result = result.lowercased()
+           if result == "dq" || result == "foul" {
+               return false
+           }
+           return true
+       }
+           
+        let sortedResults = results.sorted(by: {
+           if $0.seed == nil {
+               print("NOOO SEED")
+           }
+           if $1.seed == nil {
+               print("NOOO SEED1")
+           }
+           
+           var seed1 = $0.seed ?? (isTimed ? 2000000 : -200000)
+           var seed2 = $1.seed ?? (isTimed ? 2000000 : -200000)
+
+           if seed1 == seed2 {
+               if let athlete1 = $0.athlete, let athlete2 = $1.athlete {
+                   if athlete1.lastName != athlete2.lastName {
+                       return athlete1.lastName! < athlete2.lastName!
+                   }
+                   return athlete1.firstName! < athlete2.firstName!
+               }
+               if let team1 = ($0 as? Relay)?.team, let team2 = ($1 as? Relay)?.team {
+                   return team1 < team2
+               }
+           } else {
+            if !isNumber(result: $0.result!) {
+                   seed1 = isTimed ? 1000000 : -100000
+               }
+            if !isNumber(result: $1.result!) {
+                   seed2 = isTimed ? 1000000 : -100000
+               }
+
+               return isTimed ? seed2 > seed1 : seed1 > seed2
+           }
+           
+           // sort by name
+           if let athlete1 = $0.athlete, let athlete2 = $1.athlete {
+               if athlete1.lastName != athlete2.lastName {
+                   return athlete1.lastName! < athlete2.lastName!
+               }
+               return athlete1.firstName! < athlete2.firstName!
+           }
+        
+           if let team1 = ($0 as? Relay)?.team, let team2 = ($1 as? Relay)?.team {
+               return team1 < team2
+           }
+           return $0.result! > $1.result!
+       })
+
+       return sortedResults
+   }
 }

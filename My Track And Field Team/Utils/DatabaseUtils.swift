@@ -143,8 +143,8 @@ class DatabaseUtils {
                     let athlete = Athlete(document: document)
                     // remove the deleted season from athlete 'seasons' field
                     var seasons = athlete.seasons!
-                    let index = seasons.firstIndex(of: seasonId)!
-                    seasons.remove(at: index)
+                    let index = seasons.firstIndex(of: season.id!)
+                    seasons.remove(at: index!)
                     
                     let nukeAthlete = seasons.isEmpty
                     
@@ -156,8 +156,8 @@ class DatabaseUtils {
                         // delete the athlete document because athlete no longer belongs to any season
                         batch.deleteDocument(athleteRef)
                         // delete the athlete from realtime database (in case there's any data lingering)
-                        updates["\(Athlete.ATHLETES)/\(team.id!)/\(athlete.id!)"] = nil // NSnull.self ????
-                        realTimeDB.child(Athlete.ATHLETES).child(teamId).child(athlete.id!).removeValue()
+                        updates["\(Athlete.ATHLETES)/\(team.id!)/\(athlete.id!)"] = NSNull()
+                        realTimeDB.child(Athlete.ATHLETES).child(team.id!).child(athlete.id!).removeValue()
                         // removes athlete photo if one exists
                         let photoRef = storageDB.child("\(Athlete.PHOTOS)/\(athlete.id!).jpg")
                         photoRef.delete()
@@ -199,7 +199,7 @@ class DatabaseUtils {
         
         let path = "\(Access.ACCESS)/\(teamId)/\(Access.SEASONS)"
         for (seasonId, access) in access {
-            updates["\(path)/\(seasonId)/\(Access.MANAGERS)/\(userId)"] = access ? true : nil
+            updates["\(path)/\(seasonId)/\(Access.MANAGERS)/\(userId)"] = access ? true : NSNull()
         }
         
         realTimeDB.updateChildValues(updates)
@@ -263,36 +263,27 @@ class DatabaseUtils {
     // if the athlete only belongs to one season, delete document
     // if the athlete belongs to multiple seasons, then just remove the current seasonid from seasons array
     static func deleteAthlete(teamId: String, seasonId: String, athlete: Athlete) {
-        //  first find out if athlete results exist in this season
-        let path = "\(Athlete.ATHLETES)/\(teamId)/\(athlete.id!)/\(Athlete.RESULTS)/\(seasonId)"
-        realTimeDB.child(path).queryLimited(toFirst: 1).observeSingleEvent(of: .value) { (snapshot) in
-            if (snapshot.exists()) {
-                // show error
-                // Unable to delete athlete. Must delete all the athlete's event results.
-            } else {
-                let docRef = firestoreDB.document("\(Team.TEAM)/\(teamId)/\(Team.ROSTER)/\(athlete.id!)")
+            let docRef = firestoreDB.document("\(Team.TEAM)/\(teamId)/\(Team.ROSTER)/\(athlete.id!)")
                 
-                var seasons = athlete.seasons!
-                let index = seasons.firstIndex(of: seasonId)!
-                seasons.remove(at: index)
-                
-                let nukeAthlete = seasons.isEmpty
-                
-                if nukeAthlete { // completely remove athlete from database
-                    docRef.delete() { error in
-                        if error != nil {
-                            // nuke the athlete node from realtime database
-                            realTimeDB.child(Athlete.ATHLETES).child(teamId).child(athlete.id!).removeValue()
-                            // removes athlete photo if there exists one
-                            let photoRef = storageDB.child("\(Athlete.PHOTOS)/\(athlete.id!).jpg")
-                            photoRef.delete()
-                        }
+            var seasons = athlete.seasons!
+            let index = seasons.firstIndex(of: seasonId)!
+            seasons.remove(at: index)
+            
+            let nukeAthlete = seasons.isEmpty
+            
+            if nukeAthlete { // completely remove athlete from database
+                docRef.delete() { error in
+                    if error != nil {
+                        // nuke the athlete node from realtime database
+                        realTimeDB.child(Athlete.ATHLETES).child(teamId).child(athlete.id!).removeValue()
+                        // removes athlete photo if there exists one
+                        let photoRef = storageDB.child("\(Athlete.PHOTOS)/\(athlete.id!).jpg")
+                        photoRef.delete()
                     }
-                } else { // remove athlete just from season
-                    docRef.updateData([Athlete.SEASONS: FieldValue.arrayRemove([seasonId])])
                 }
+            } else { // remove athlete just from season
+                docRef.updateData([Athlete.SEASONS: FieldValue.arrayRemove([seasonId])])
             }
-        }
     }
     
     // add competition to current season, if type is cross country dual meet, put in default scores in realtime database
@@ -410,7 +401,7 @@ class DatabaseUtils {
                 if isTrackDual { // also must delete scores for track events that no longer exist
                     for i in 0..<meet.getOpponentCount() {
                         let opponent = "\(Competition.OPPONENT)\(i + 1)"
-                        updates["\(scoringPath)/\(opponent)/\(nodeKey)"] = nil
+                        updates["\(scoringPath)/\(opponent)/\(nodeKey)"] = NSNull()
                     }
                 }
             } else { // track events that will reorder (update the order field)
@@ -420,7 +411,7 @@ class DatabaseUtils {
                 if isTrackDual { // also must recorder the scores
                     for i in 0..<meet.getOpponentCount() {
                         let opponent = "\(Competition.OPPONENT)\(i + 1)"
-                        updates["\(scoringPath)/\(opponent)/\(nodeKey)/\(Score.ORDER)"] = nil
+                        updates["\(scoringPath)/\(opponent)/\(nodeKey)/\(Score.ORDER)"] = order
                     }
                 }
             }
@@ -492,7 +483,7 @@ class DatabaseUtils {
         var seed: Any? // seed is any because it can be a Double or an Int (result for multi-event is always an integer)
         
         if result == nil { // if input is entered with no result (blank), then seed should be removed from competition
-            seed = nil
+            seed = NSNull()
         } else {
             // method to convert any type of result to a seed
             seed = EventResult.convertResultToSeed(eventResult: eventResult, isMetric: team.isMetric())
@@ -523,7 +514,7 @@ class DatabaseUtils {
         let athletePath = "\(Athlete.ATHLETES)/\(team.id!)/\(eventResult.athlete!.id!)/\(Athlete.RESULTS)/\(seasonId)/\(meetId)/\(eventId)"
         
         if result == nil {
-            updates[athletePath] = nil // if no result, remove the path from the athlete
+            updates[athletePath] = NSNull() // if no result, remove the path from the athlete
         } else { // populate athlete path with event result
             updates["\(athletePath)/\(EventResult.ID)"] = eventId
             updates["\(athletePath)/\(EventResult.NAME)"] = eventResult.name
@@ -544,7 +535,7 @@ class DatabaseUtils {
         var seed: Any? // seed is any because it can be a Double or an Int (result for multi-event is always an integer)
         
         if result == nil { // if input is entered with no result (blank), then seed should be removed from competition
-            seed = nil
+            seed = NSNull()
         } else {
             // method to convert any type of result to a seed
             seed = EventResult.convertResultToSeed(eventResult: relay, isMetric: team.isMetric())
@@ -589,7 +580,7 @@ class DatabaseUtils {
         if athletesRemoved != nil {
             for athleteId in athletesRemoved! {
                 let athletePath = "\(Athlete.ATHLETES)/\(team.id!)/\(athleteId)/\(Athlete.RESULTS)/\(seasonId)/\(meetId)/\(eventId)"
-                updates[athletePath] = nil
+                updates[athletePath] = NSNull()
             }
         }
         
@@ -605,9 +596,9 @@ class DatabaseUtils {
         var updates = [String: Any]()
         
         // competition path
-        let competitionPath = "\(Competition.COMPETITIONS)/\(teamId)/\(seasonId)/\(Competition.RESULTS)/\(meet.id!)/\(nodeKey)/\(TrackEvent.RESULTS)/\(eventId)"
+        let competitionPath = "\(Competition.COMPETITIONS)/\(teamId)/\(seasonId)/\(Competition.RESULTS)/\(meetId)/\(nodeKey)/\(TrackEvent.RESULTS)/\(eventId)"
         // delete event result from competition
-        updates[competitionPath] = nil
+        updates[competitionPath] = NSNull()
         
         // delete event result from athlete
         var athleteIds = [String]()
@@ -622,7 +613,7 @@ class DatabaseUtils {
         
         for athleteId in athleteIds {
             let athletePath = "\(Athlete.ATHLETES)/\(teamId)/\(athleteId)/\(Athlete.RESULTS)/\(seasonId)/\(meetId)/\(eventId)"
-            updates[athletePath] = nil
+            updates[athletePath] = NSNull()
         }
         
         realTimeDB.updateChildValues(updates)
@@ -637,7 +628,7 @@ class DatabaseUtils {
         var updates = [String: Any]()
         
         // competition path
-        let competitionPath = "\(Competition.COMPETITIONS)/\(teamId)/\(seasonId)/\(Competition.RESULTS)/\(meet.id!)/\(nodeKey)/\(TrackEvent.RESULTS)/\(eventId)"
+        let competitionPath = "\(Competition.COMPETITIONS)/\(teamId)/\(seasonId)/\(Competition.RESULTS)/\(meetId)/\(nodeKey)/\(TrackEvent.RESULTS)/\(eventId)"
         updates["\(competitionPath)/\(EventResult.COMMENT)"] = eventResult.comment
         
         // only non-relay athletes receive the comment in the athlete data
@@ -658,7 +649,7 @@ class DatabaseUtils {
         var updates = [String: Any]()
         
         // competition path
-        let competitionPath = "\(Competition.COMPETITIONS)/\(teamId)/\(seasonId)/\(Competition.RESULTS)/\(meet.id!)/\(nodeKey)/\(TrackEvent.RESULTS)/\(eventId)"
+        let competitionPath = "\(Competition.COMPETITIONS)/\(teamId)/\(seasonId)/\(Competition.RESULTS)/\(meetId)/\(nodeKey)/\(TrackEvent.RESULTS)/\(eventId)"
         updates["\(competitionPath)/\(EventResult.SPLITS)"] = eventResult.splits
         
         realTimeDB.updateChildValues(updates)
@@ -669,7 +660,7 @@ class DatabaseUtils {
         var updates = [String: Any]()
         
         // competition path - scoring
-        let competitionPath = "\(Competition.COMPETITIONS)/\(teamId)/\(season.id!)/\(Competition.SCORING)/\(meet.id!)/\(opponent)"
+        let competitionPath = "\(Competition.COMPETITIONS)/\(teamId)/\(season.id!)/\(Competition.SCORING)/\(meetId)/\(opponent)"
         if season.isCrossCountry() {
             updates["\(competitionPath)"] = score.toDictCrossCountryScoring()
         } else {
@@ -700,7 +691,7 @@ class DatabaseUtils {
         let accessPath = "\(Access.ACCESS)/\(teamId)"
         
         // removes user as team manager
-        updates["\(accessPath)/\(Access.MANAGERS)/\(userId)"] = nil // NSnull.self ???
+        updates["\(accessPath)/\(Access.MANAGERS)/\(userId)"] = NSNull()
         
         // removes user as season manager
         let seasons = team.seasons

@@ -319,16 +319,19 @@ class TrackEvent: NSObject {
     
     // array of relay events per season, gender
     static func getRelayEvents(isIndoor: Bool, isMale: Bool) -> [String] {
-        var events = getRelayEvents()
+        let events = getRelayEvents()
+        var eventsToRemove = [String]()
+        
         if isIndoor {
-            events.remove(SHUTTLE_HURDLE_RELAY_100)
-            events.remove(SHUTTLE_HURDLE_RELAY_110)
+            eventsToRemove.append(SHUTTLE_HURDLE_RELAY_100)
+            eventsToRemove.append(SHUTTLE_HURDLE_RELAY_110)
         } else {
-            events.remove(SHUTTLE_HURDLE_RELAY_55)
-            events.remove(SHUTTLE_HURDLE_RELAY_60)
-            events.remove(isMale ? SHUTTLE_HURDLE_RELAY_100 : SHUTTLE_HURDLE_RELAY_110)
+            eventsToRemove.append(SHUTTLE_HURDLE_RELAY_55)
+            eventsToRemove.append(SHUTTLE_HURDLE_RELAY_60)
+            eventsToRemove.append(isMale ? SHUTTLE_HURDLE_RELAY_100 : SHUTTLE_HURDLE_RELAY_110)
         }
-        return events
+        
+        return events.filter {!eventsToRemove.contains($0)}
     }
     
     // the 4 events in a 4x100m relay (each split/leg is 100m)

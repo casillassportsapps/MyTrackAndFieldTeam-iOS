@@ -9,13 +9,14 @@
 import UIKit
 import Firebase
 
-let ref = DatabaseUtils.realTimeDB
-var resultsRef: DatabaseReference!
-var teamId: String!
-var seasonId: String!
-var meet: Competition!
 
 class MeetDetailsViewController: UIViewController {
+    
+    let ref = DatabaseUtils.realTimeDB
+    var resultsRef: DatabaseReference!
+    var teamId: String!
+    var seasonId: String!
+    var meet: Competition!
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

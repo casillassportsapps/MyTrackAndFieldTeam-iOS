@@ -11,11 +11,10 @@ import Firebase
 import FirebaseUI
 
 
-var authUI: FUIAuth!
-var authStateListener: AuthStateDidChangeListenerHandle!
-
-
 class MainViewController: UIViewController {
+    
+    var authUI: FUIAuth!
+    var authStateListener: AuthStateDidChangeListenerHandle!
     
     override func viewWillAppear(_ animated: Bool) {
         if authStateListener == nil {
