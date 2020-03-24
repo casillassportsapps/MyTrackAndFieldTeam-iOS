@@ -263,27 +263,35 @@ class DatabaseUtils {
     // if the athlete only belongs to one season, delete document
     // if the athlete belongs to multiple seasons, then just remove the current seasonid from seasons array
     static func deleteAthlete(teamId: String, seasonId: String, athlete: Athlete) {
-            let docRef = firestoreDB.document("\(Team.TEAM)/\(teamId)/\(Team.ROSTER)/\(athlete.id!)")
+        let path = "\(Athlete.ATHLETES)/\(teamId)/\(athlete.id!)/\(seasonId)/\(Athlete.RESULTS)"
+        realTimeDB.child(path).queryLimited(toFirst: 1).observeSingleEvent(of: .value) { (snapshot) in
+            if (snapshot.exists()) {
+                // show error
+                // Unable to delete athlete. Delete all the athlete's event result(s) to continue.
+            } else {
+                let docRef = firestoreDB.document("\(Team.TEAM)/\(teamId)/\(Team.ROSTER)/\(athlete.id!)")
+
+                var seasons = athlete.seasons!
+                let index = seasons.firstIndex(of: seasonId)!
+                seasons.remove(at: index)
                 
-            var seasons = athlete.seasons!
-            let index = seasons.firstIndex(of: seasonId)!
-            seasons.remove(at: index)
-            
-            let nukeAthlete = seasons.isEmpty
-            
-            if nukeAthlete { // completely remove athlete from database
-                docRef.delete() { error in
-                    if error != nil {
-                        // nuke the athlete node from realtime database
-                        realTimeDB.child(Athlete.ATHLETES).child(teamId).child(athlete.id!).removeValue()
-                        // removes athlete photo if there exists one
-                        let photoRef = storageDB.child("\(Athlete.PHOTOS)/\(athlete.id!).jpg")
-                        photoRef.delete()
+                let nukeAthlete = seasons.isEmpty
+                
+                if nukeAthlete { // completely remove athlete from database
+                    docRef.delete() { error in
+                        if error != nil {
+                            // nuke the athlete node from realtime database
+                            realTimeDB.child("\(Athlete.ATHLETES)/\(teamId)/\(athlete.id!)").removeValue()
+                            // removes athlete photo if there exists one
+                            let photoRef = storageDB.child("\(Athlete.PHOTOS)/\(athlete.id!).jpg")
+                            photoRef.delete()
+                        }
                     }
+                } else { // remove athlete just from season
+                    docRef.updateData([Athlete.SEASONS: FieldValue.arrayRemove([seasonId])])
                 }
-            } else { // remove athlete just from season
-                docRef.updateData([Athlete.SEASONS: FieldValue.arrayRemove([seasonId])])
             }
+        }
     }
     
     // add competition to current season, if type is cross country dual meet, put in default scores in realtime database

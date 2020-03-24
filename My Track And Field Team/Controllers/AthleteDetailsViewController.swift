@@ -51,7 +51,6 @@ class AthleteDetailsViewController: UIViewController {
         
         // delete athlete
         // an athlete can only be deleted if there are no results, see deleteAthlete() method in DatabaseUtils.swift
-        // if there are results, show error "Unable to delete athlete. Delete all the athlete's event result(s) to continue.
         
         // athlete notes
         // this goes to an athlete notes page, must pass in the event results that was loaded form the loadResults() method to retreive all the comments from the EventResult
