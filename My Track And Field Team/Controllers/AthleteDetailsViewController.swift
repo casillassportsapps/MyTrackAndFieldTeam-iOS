@@ -97,7 +97,7 @@ class AthleteDetailsViewController: UIViewController {
                     
                     // store all competitions in an array for sorting
                     var competitions = [Competition]()
-                    let competitionEnumerator = snapshot.children
+                    let competitionEnumerator = seasonSnapshot.children
                     while let competitionSnapshot = competitionEnumerator.nextObject() as? DataSnapshot {
                         let competitionId = competitionSnapshot.key
                         let competition = competitionDict[competitionId]
