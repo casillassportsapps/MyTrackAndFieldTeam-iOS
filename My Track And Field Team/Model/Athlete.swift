@@ -78,7 +78,7 @@ class Athlete: NSObject {
         let seasonEnumerator = snapshot.children
         while let seasonSnapshot = seasonEnumerator.nextObject() as? DataSnapshot {
             let seasonId = seasonSnapshot.key
-            let competitionEnumerator = snapshot.children
+            let competitionEnumerator = seasonSnapshot.children
             while let competitionSnapshot = competitionEnumerator.nextObject() as? DataSnapshot {
                 let competitionId = competitionSnapshot.key
                 let eventEnumerator = competitionSnapshot.children
