@@ -263,7 +263,7 @@ class DatabaseUtils {
     // if the athlete only belongs to one season, delete document
     // if the athlete belongs to multiple seasons, then just remove the current seasonid from seasons array
     static func deleteAthlete(teamId: String, seasonId: String, athlete: Athlete) {
-        let path = "\(Athlete.ATHLETES)/\(teamId)/\(athlete.id!)/\(seasonId)/\(Athlete.RESULTS)"
+        let path = "\(Athlete.ATHLETES)/\(teamId)/\(athlete.id!)/\(Athlete.RESULTS)/\(seasonId)"
         realTimeDB.child(path).queryLimited(toFirst: 1).observeSingleEvent(of: .value) { (snapshot) in
             if (snapshot.exists()) {
                 // show error
