@@ -244,7 +244,7 @@ class DatabaseUtils {
         
         let docRef = firestoreDB.document("\(Team.TEAM)/\(teamId)/\(Team.ROSTER)/\(athlete.id!)")
         docRef.updateData(updates) { error in
-            if error != nil {
+            if error == nil {
                 if athlete.denormalize {
                     let path = "\(Athlete.ATHLETES)/\(teamId)/\(athlete.id!)/\(Athlete.RESULTS)"
                     realTimeDB.child(path).observeSingleEvent(of: .value) { (snapshot) in
@@ -279,7 +279,7 @@ class DatabaseUtils {
                 
                 if nukeAthlete { // completely remove athlete from database
                     docRef.delete() { error in
-                        if error != nil {
+                        if error == nil {
                             // nuke the athlete node from realtime database
                             realTimeDB.child("\(Athlete.ATHLETES)/\(teamId)/\(athlete.id!)").removeValue()
                             // removes athlete photo if there exists one
@@ -302,7 +302,7 @@ class DatabaseUtils {
         
         let docRef = firestoreDB.document("\(Team.TEAM)/\(teamId)/\(Team.SCHEDULE)/\(competitionId)")
         docRef.setData(competition.toDict()) { error in
-            if error != nil {
+            if error == nil {
                 if competition.isCrossCountryDual(isCrossCountry: season.isCrossCountry()) {
                     let path = "\(Competition.COMPETITIONS)/\(teamId)/\(season.id!)/\(Competition.SCORING)/\(competitionId)"
                     var dict = [String: Any]()
