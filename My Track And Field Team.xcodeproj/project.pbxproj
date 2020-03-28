@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2B32C07B6701F5117EC16B38 /* Pods_My_Track_And_Field_Team.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F3F3EB67F14C3DE7014F796 /* Pods_My_Track_And_Field_Team.framework */; };
 		78453DFC2429681700AA432C /* AthleteDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78453DFB2429681700AA432C /* AthleteDetailsViewController.swift */; };
+		78453DFE242FA37900AA432C /* Note.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78453DFD242FA37900AA432C /* Note.swift */; };
 		78565CCA24087171007E142E /* DualMeetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78565CC924087171007E142E /* DualMeetViewController.swift */; };
 		7867F4A123D92AE700940326 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7867F4A023D92AE700940326 /* AppDelegate.swift */; };
 		7867F4A323D92AE700940326 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7867F4A223D92AE700940326 /* SceneDelegate.swift */; };
@@ -37,6 +38,7 @@
 /* Begin PBXFileReference section */
 		69110EAB60B131D58501C8A0 /* Pods-My Track And Field Team.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-My Track And Field Team.debug.xcconfig"; path = "Target Support Files/Pods-My Track And Field Team/Pods-My Track And Field Team.debug.xcconfig"; sourceTree = "<group>"; };
 		78453DFB2429681700AA432C /* AthleteDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AthleteDetailsViewController.swift; sourceTree = "<group>"; };
+		78453DFD242FA37900AA432C /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
 		78565CC924087171007E142E /* DualMeetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DualMeetViewController.swift; sourceTree = "<group>"; };
 		7867F49D23D92AE700940326 /* My Track And Field Team.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "My Track And Field Team.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7867F4A023D92AE700940326 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -157,6 +159,7 @@
 				7873C19823FF407F00BCB3C4 /* Team.swift */,
 				7873C19A23FF42FE00BCB3C4 /* User.swift */,
 				7873C19C23FF43D400BCB3C4 /* Location.swift */,
+				78453DFD242FA37900AA432C /* Note.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -305,6 +308,7 @@
 			files = (
 				787F4E2223F0A023008A4465 /* Score.swift in Sources */,
 				78A7283A23EF2333006EB363 /* MeetDetailsViewController.swift in Sources */,
+				78453DFE242FA37900AA432C /* Note.swift in Sources */,
 				7867F4A523D92AE700940326 /* MainViewController.swift in Sources */,
 				78A7283423EE29DC006EB363 /* Relay.swift in Sources */,
 				7873C19D23FF43D400BCB3C4 /* Location.swift in Sources */,
