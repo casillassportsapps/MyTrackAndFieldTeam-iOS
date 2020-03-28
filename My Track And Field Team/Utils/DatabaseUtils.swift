@@ -707,8 +707,7 @@ class DatabaseUtils {
             for (_, season) in seasons! {
                 // if user is manager of any season, remove the user id
                 if season.isManager(id: userId) {
-                    updates["\(accessPath)/\(Access.SEASONS)/\(season.id!)/\(Access.MANAGERS)/\(userId)"] = nil // NSnull.self ???
-                    
+                    updates["\(accessPath)/\(Access.SEASONS)/\(season.id!)/\(Access.MANAGERS)/\(userId)"] = NSNull()
                 }
             }
         }
