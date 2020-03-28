@@ -716,4 +716,34 @@ class DatabaseUtils {
         realTimeDB.updateChildValues(updates)
         batch.commit()
     }
+    
+    static func addNote(teamId: String, athleteId: String, note: Note) {
+        if note.comment!.isEmpty {
+            // just make sure the comment cannot be empty
+            return
+        }
+        
+        let id = generateId()
+        note.id = id
+        let path = "\(Athlete.ATHLETES)/\(teamId)/\(athleteId)/\(Athlete.NOTES)/\(id)"
+        
+        realTimeDB.child(path).setValue(note.toDict())
+    }
+    
+    static func updateNote(teamId: String, athleteId: String, note: Note) {
+        if note.comment!.isEmpty {
+            // just make sure the comment cannot be empty
+            return
+        }
+        
+        let path = "\(Athlete.ATHLETES)/\(teamId)/\(athleteId)/\(Athlete.NOTES)/\(note.id!)/\(Note.COMMENT)"
+        
+        realTimeDB.child(path).setValue(note.comment!)
+    }
+    
+    static func deleteNote(teamId: String, athleteId: String, note: Note) {
+        let path = "\(Athlete.ATHLETES)/\(teamId)/\(athleteId)/\(Athlete.NOTES)/\(note.id!)"
+        
+        realTimeDB.child(path).removeValue()
+    }
 }

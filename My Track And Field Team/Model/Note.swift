@@ -34,7 +34,7 @@ class Note: NSObject {
     init(eventResult: EventResult, competition: Competition) {
         self.comment = eventResult.comment
         self.dateTime = competition.dateTime
-        self.title = "\(competition.name): \(eventResult.name)"
+        self.title = "\(competition.name!): \(eventResult.name!)"
     }
     
     func toDict() -> [String: Any] {
