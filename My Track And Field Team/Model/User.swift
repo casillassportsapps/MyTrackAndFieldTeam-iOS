@@ -19,6 +19,10 @@ class User: NSObject {
     var name: String?
     var email: String?
     
+    init(id: String) {
+        self.id = id
+    }
+    
     init(id: String, name: String, email: String) {
         self.id = id
         self.name = name

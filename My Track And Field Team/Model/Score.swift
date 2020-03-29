@@ -133,8 +133,8 @@ class Score: NSObject {
         } else if (firstPlace == OPPONENT) {
             opponentPoints += 5.0
         } else if (firstPlace == TIE) {
-            myPoints = 2.5
-            opponentPoints = 2.5
+            myPoints += 2.5
+            opponentPoints += 2.5
         }
         
         if secondPlace == MY_TEAM {
@@ -142,8 +142,8 @@ class Score: NSObject {
         } else if (secondPlace == OPPONENT) {
             opponentPoints += 3
         } else if (secondPlace == TIE) {
-            myPoints = 1.5
-            opponentPoints = 1.5
+            myPoints += 1.5
+            opponentPoints += 1.5
         }
         
         if thirdPlace == MY_TEAM {
@@ -151,8 +151,8 @@ class Score: NSObject {
         } else if (thirdPlace == OPPONENT) {
             opponentPoints += 1
         } else if (thirdPlace == TIE) {
-            myPoints = 0.5
-            opponentPoints = 0.5
+            myPoints += 0.5
+            opponentPoints += 0.5
         }
         
         return [myPoints, opponentPoints]

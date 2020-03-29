@@ -54,7 +54,7 @@ class Team: NSObject {
     var location: Location?
     
     var managers: [String]?
-    var seasons: [String: Season]?
+    var seasons: [Season]?
     
     override init() {
     }
@@ -79,8 +79,15 @@ class Team: NSObject {
         self.unit = dict[Team.UNIT] as? String
         self.owner = dict[Team.OWNER] as? User
         self.location = dict[Team.LOCATION] as? Location
-        self.managers = dict[Team.PASSWORD] as? [String]
-        self.seasons = dict[Team.SEASONS] as? [String: Season]
+        self.managers = dict[Team.MANAGERS] as? [String]
+
+        self.seasons = [Season]()
+        if let seasonsDict = dict[Team.SEASONS] as? [String: [String: Any?]] {
+            for (_, rawSeason) in seasonsDict {
+                let season = Season(dict: rawSeason)
+                seasons?.append(season)
+            }
+        }
     }
     
     func toDict() -> [String: Any] {

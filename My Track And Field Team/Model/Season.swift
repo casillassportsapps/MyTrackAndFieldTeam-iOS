@@ -28,7 +28,6 @@ class Season: NSObject {
     var year: Int?
     var locked: Bool?
     var managers: [String]?
-    var competitions: [Competition]? // used to retrieve athlete data
     
     override init() {
     }
@@ -42,6 +41,13 @@ class Season: NSObject {
     // used to get season from document
     init(document: DocumentSnapshot) {
         let dict = document.data()!
+        self.id = dict[Season.ID] as? String
+        self.name = dict[Season.NAME] as? String
+        self.year = dict[Season.YEAR] as? Int
+        self.desc = dict[Season.DESCRIPTION] as? String
+    }
+    
+    init(dict: [String: Any?]) {
         self.id = dict[Season.ID] as? String
         self.name = dict[Season.NAME] as? String
         self.year = dict[Season.YEAR] as? Int

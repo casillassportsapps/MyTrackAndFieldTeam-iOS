@@ -679,7 +679,7 @@ class DatabaseUtils {
     }
     
     // delete manager from team
-    static func deleteManager(team: Team, user: User) {
+    static func deleteManager(team: Team, user: User, completion: @escaping(_ error: String?) -> Void) {
         let teamId = team.id!
         let userId = user.id!
         
@@ -689,10 +689,9 @@ class DatabaseUtils {
         let userRef = firestoreDB.document("\(User.USER)/\(userId)")
         batch.updateData(["\(User.TEAMS).\(teamId)" : FieldValue.delete()], forDocument: userRef)
         
-        // removes the user from the managers array field, if there will be no managers after deletion, then delete whole field
+        // removes the user from the managers array field
         let teamRef = firestoreDB.document("\(Team.TEAM)/\(teamId)")
-        let value = team.managers!.count > 1 ? FieldValue.arrayRemove([userId]) : FieldValue.delete()
-        batch.updateData([Team.MANAGERS : value], forDocument: teamRef)
+        batch.updateData([Team.MANAGERS : FieldValue.arrayRemove([userId])], forDocument: teamRef)
         
         // now must remove user from access node in realtime database
         var updates = [String : Any]()
@@ -704,7 +703,7 @@ class DatabaseUtils {
         // removes user as season manager
         let seasons = team.seasons
         if seasons != nil { // this should always be true, but always check in case
-            for (_, season) in seasons! {
+            for season in seasons! {
                 // if user is manager of any season, remove the user id
                 if season.isManager(id: userId) {
                     updates["\(accessPath)/\(Access.SEASONS)/\(season.id!)/\(Access.MANAGERS)/\(userId)"] = NSNull()
@@ -712,8 +711,15 @@ class DatabaseUtils {
             }
         }
         
-        realTimeDB.updateChildValues(updates)
-        batch.commit()
+        realTimeDB.updateChildValues(updates) { (error, ref) in
+            if let error = error {
+                completion(error.localizedDescription)
+            } else {
+                batch.commit() { (error) in
+                    completion(error?.localizedDescription)
+                }
+            }
+        }
     }
     
     static func addNote(teamId: String, athleteId: String, note: Note) {
