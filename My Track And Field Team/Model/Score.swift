@@ -70,7 +70,7 @@ class Score: NSObject {
     func toDictCrossCountryScoring() -> [String: Any] {
         var dict = [String: Any]()
         dict[Score.MY_PLACES] = self.myPlaces
-        dict[Score.OPPONENT_PLACES] = self.myPlaces
+        dict[Score.OPPONENT_PLACES] = self.opponentPlaces
         return dict
     }
     
