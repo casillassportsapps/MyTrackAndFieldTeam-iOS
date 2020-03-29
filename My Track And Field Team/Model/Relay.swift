@@ -15,13 +15,11 @@ class Relay : EventResult {
     
     var team: String?
     var relayResults: [String: Leg]?
-    var relayLeg: String? // only used to retrieve athlete's own results from athletes node
     
     override init(snapshot: DataSnapshot) {
         super.init(snapshot: snapshot)
         let dict = snapshot.value as! [String: Any]
         self.team = dict[Relay.TEAM] as? String
-        self.relayLeg = dict[Relay.RELAY_LEG] as? String
         
         relayResults = [String: Leg]()
         let relayEnumerator = snapshot.childSnapshot(forPath: Relay.RESULTS).children

@@ -38,7 +38,7 @@ class EventResult: NSObject {
     var seed: Double?
     
     var athlete: Athlete?
-    var leg: Relay.Leg? // used for athlete results
+    var leg: String? // used for athlete results
     
     var splits: [String]?
     var attempts: [String]?
@@ -70,9 +70,10 @@ class EventResult: NSObject {
             self.athlete = Athlete(snapshot: athleteSnapshot)
         }
         
+        // used only for athlete results
         if snapshot.hasChild(Relay.RELAY_LEG) {
             let legSnapshot = snapshot.childSnapshot(forPath: Relay.RELAY_LEG)
-            self.leg = Relay.Leg(snapshot: legSnapshot)
+            self.leg = legSnapshot.childSnapshot(forPath: Relay.Leg.LEG).value as? String
         }
         
         self.splits = dict[EventResult.SPLITS] as? [String]

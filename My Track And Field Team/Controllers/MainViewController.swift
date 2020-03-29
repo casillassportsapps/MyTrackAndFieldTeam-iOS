@@ -13,6 +13,11 @@ import FirebaseUI
 
 class MainViewController: UIViewController {
     
+    @IBAction func testFunction(_ sender: UIButton) {
+        self.test()
+    }
+    
+    
     var authUI: FUIAuth!
     var authStateListener: AuthStateDidChangeListenerHandle!
     
@@ -22,8 +27,6 @@ class MainViewController: UIViewController {
                 if firebaseUser != nil {
                     print("authenticated")
                     print(firebaseUser!.uid)
-                    
-                    self.test()
                 } else {
                     self.signIn()
                 }
@@ -70,7 +73,22 @@ class MainViewController: UIViewController {
     
     // TESTING DATABASE AND METHODS BELOW
     func test() {
+        let teamId = "-Kw7SanZs1Fry-It_NG9"
+        let athlete = Athlete(id: "-Kwbvmr_hnyy4CtxGWXl")
+        athlete.firstName = "Madeline"
+        athlete.lastName = "Mowbray"
         
+        DatabaseUtils.realTimeDB.child("\(Athlete.ATHLETES)/\(teamId)/\(athlete.id!)/\(Athlete.RESULTS)")
+            .observeSingleEvent(of: .value, with: { (snapshot) in
+                let updates = Athlete.getPathsToDenormalize(teamId: teamId, athlete: athlete, snapshot: snapshot)
+                if updates == nil {
+                    return
+                }
+                
+                updates!.keys.forEach { key in
+                    print(key)
+                }
+            })
     }
     
 }

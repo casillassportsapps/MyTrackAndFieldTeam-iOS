@@ -745,4 +745,22 @@ class DatabaseUtils {
         
         realTimeDB.child(path).removeValue()
     }
+    
+    static func addRecord(teamId: String, record: Record) {
+        let id = generateId()
+        record.id = id
+        
+        let path = "\(Team.TEAM)/\(teamId)/\(Team.RECORDS)/\(id)"
+        firestoreDB.document(path).setData(record.toDict())
+    }
+    
+    static func updateRecord(teamId: String, record: Record) {
+        let path = "\(Team.TEAM)/\(teamId)/\(Team.RECORDS)/\(record.id!)"
+        firestoreDB.document(path).updateData(record.toDict())
+    }
+    
+    static func deleteRecord(teamId: String, record: Record) {
+        let path = "\(Team.TEAM)/\(teamId)/\(Team.RECORDS)/\(record.id!)"
+        firestoreDB.document(path).delete()
+    }
 }

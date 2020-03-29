@@ -92,13 +92,12 @@ class Athlete: NSObject {
                         eventName = TrackEvent.PENTATHLON
                     }
                     
-                    let path = "\(Competition.COMPETITIONS)/\(teamId)/\(seasonId)/\(Competition.RESULTS)/\(competitionId)\(eventName)\(TrackEvent.RESULTS)/\(eventResult.id!)"
+                    let path = "\(Competition.COMPETITIONS)/\(teamId)/\(seasonId)/\(Competition.RESULTS)/\(competitionId)/\(eventName)/\(TrackEvent.RESULTS)/\(eventResult.id!)"
                     
-                    if eventResult.athlete != nil { // normal event or multi-event
+                    if TrackEvent.isRelayEvent(name: eventName) { // relay event
+                        updates["\(path)/\(Relay.RESULTS)/\(eventResult.leg!)/\(EventResult.ATHLETE)"] = athlete.toDictBasic()
+                    } else { // normal event or multi-event
                         updates["\(path)/\(EventResult.ATHLETE)"] = athlete.toDictBasic()
-                    } else { // relay event
-                        let relay = Relay(snapshot: eventSnapshot)
-                        updates["\(path)/\(Relay.RESULTS)/\(relay.relayLeg!)/\(EventResult.ATHLETE)"] = athlete.toDictBasic()
                     }
                 }
             }
