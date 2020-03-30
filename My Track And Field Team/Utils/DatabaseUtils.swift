@@ -699,6 +699,7 @@ class DatabaseUtils {
         
         // removes user as team manager
         updates["\(accessPath)/\(Access.MANAGERS)/\(userId)"] = NSNull()
+        print("\(accessPath)/\(Access.MANAGERS)/\(userId)")
         
         // removes user as season manager
         let seasons = team.seasons
@@ -707,6 +708,7 @@ class DatabaseUtils {
                 // if user is manager of any season, remove the user id
                 if season.isManager(id: userId) {
                     updates["\(accessPath)/\(Access.SEASONS)/\(season.id!)/\(Access.MANAGERS)/\(userId)"] = NSNull()
+                    print("\(accessPath)/\(Access.SEASONS)/\(season.id!)/\(Access.MANAGERS)/\(userId)")
                 }
             }
         }

@@ -74,7 +74,7 @@ class MainViewController: UIViewController {
     // TESTING DATABASE AND METHODS BELOW
     func test() {
         let teamId = "-M-KuFlPmU1ahZEv8ptg"
-        
+
     }
     
 }
