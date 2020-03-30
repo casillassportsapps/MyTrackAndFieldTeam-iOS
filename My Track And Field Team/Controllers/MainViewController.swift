@@ -17,7 +17,11 @@ class MainViewController: UIViewController {
         self.test()
     }
     
+    @IBAction func signOut(_ sender: Any) {
+        self.signOut()
+    }
     
+    var uId: String!
     var authUI: FUIAuth!
     var authStateListener: AuthStateDidChangeListenerHandle!
     
@@ -27,7 +31,9 @@ class MainViewController: UIViewController {
                 if firebaseUser != nil {
                     print("authenticated")
                     print(firebaseUser!.uid)
+                    self.uId = firebaseUser!.uid
                 } else {
+                    print("unauthenticated")
                     self.signIn()
                 }
             })
@@ -73,8 +79,28 @@ class MainViewController: UIViewController {
     
     // TESTING DATABASE AND METHODS BELOW
     func test() {
-        let teamId = "-M-KuFlPmU1ahZEv8ptg"
+        let teamId = "-Kw7SanZs1Fry-It_NG9" // "-M-KuFlPmU1ahZEv8ptg"
 
+        DatabaseUtils.firestoreDB.document("\(Team.TEAM)/\(teamId)").getDocument { (document, error) in
+            if let document = document, document.exists {
+                let team = Team(document: document)
+                
+                var managers = [String]()
+                managers.append(self.uId)
+                
+                for season in team.seasons! {
+                    if season.id != "-Lj8rSokYrQ3l68CUDUV" {
+                        season.managers = managers
+                    }
+                }
+                
+                DatabaseUtils.deleteManager(team: team, userId: self.uId, completion: { error in
+                    print(error ?? "Success")
+                })
+            } else {
+                print("Document does not exist")
+            }
+        }
     }
     
 }

@@ -679,9 +679,8 @@ class DatabaseUtils {
     }
     
     // delete manager from team
-    static func deleteManager(team: Team, user: User, completion: @escaping(_ error: String?) -> Void) {
+    static func deleteManager(team: Team, userId: String, completion: @escaping(_ error: String?) -> Void) {
         let teamId = team.id!
-        let userId = user.id!
         
         let batch = firestoreDB.batch()
         
@@ -699,7 +698,6 @@ class DatabaseUtils {
         
         // removes user as team manager
         updates["\(accessPath)/\(Access.MANAGERS)/\(userId)"] = NSNull()
-        print("\(accessPath)/\(Access.MANAGERS)/\(userId)")
         
         // removes user as season manager
         let seasons = team.seasons
@@ -708,16 +706,19 @@ class DatabaseUtils {
                 // if user is manager of any season, remove the user id
                 if season.isManager(id: userId) {
                     updates["\(accessPath)/\(Access.SEASONS)/\(season.id!)/\(Access.MANAGERS)/\(userId)"] = NSNull()
-                    print("\(accessPath)/\(Access.SEASONS)/\(season.id!)/\(Access.MANAGERS)/\(userId)")
                 }
             }
         }
         
         realTimeDB.updateChildValues(updates) { (error, ref) in
             if let error = error {
+                print("error in realtime database")
                 completion(error.localizedDescription)
             } else {
                 batch.commit() { (error) in
+                    if error != nil {
+                        print("error in firestore")
+                    }
                     completion(error?.localizedDescription)
                 }
             }
