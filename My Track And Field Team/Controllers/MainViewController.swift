@@ -79,6 +79,62 @@ class MainViewController: UIViewController {
     
     // TESTING DATABASE AND METHODS BELOW
     func test() {
+        
+    }
+    
+    var compListener: ListenerRegistration!
+    func getCompetitionData() {
+        let teamId = "-Kw7SanZs1Fry-It_NG9" // Islip
+        let seasonId = "-Lj8rSokYrQ3l68CUDUa" // Outdoor 2019
+        let isXC = false
+        
+        let path = "\(Competition.COMPETITIONS)/\(teamId)/\(seasonId)/\(Competition.RESULTS)"
+        DatabaseUtils.realTimeDB.child(path).observe(.value, with: { (snapshot) in
+            if !snapshot.exists() {
+                // show "No Stats"
+                return
+            }
+            
+            // get competitions from the season
+            let competitionRef = DatabaseUtils.firestoreDB.collection("\(Team.TEAM)/\(teamId)/\(Team.SCHEDULE)")
+            self.compListener = competitionRef.whereField(Competition.SEASON_ID, isEqualTo: seasonId).addSnapshotListener({ querySnapshot, error in
+                self.compListener.remove() //
+
+                if error != nil || querySnapshot == nil {
+                    return
+                }
+                
+                // create the competition dictionary
+                var compDict = [String: Competition]()
+                for document in querySnapshot!.documents {
+                    let competition = Competition(document: document)
+                    compDict[competition.id!] = competition
+                }
+                
+                // get all results
+                let dict = Competition.getStatResults(snapshot: snapshot, competitionsDict: compDict, isCrossCountry: isXC)
+                
+                for (key, value) in dict {
+                    print(key)
+                    print("-----------------")
+                    for eventResult in value {
+                        if eventResult.isRelay() {
+                            let relay = eventResult as! Relay
+                            print(relay.result!)
+                            for athlete in relay.getRelayAthletes() {
+                                print(athlete.fullName()!)
+                            }
+                        } else {
+                            print("\(eventResult.athlete!.fullName()!) \(eventResult.result!)")
+                        }
+                    }
+                    print("-----------------")
+                }
+            })
+        })
+    }
+    
+    func deleteManager() {
         let teamId = "-Kw7SanZs1Fry-It_NG9" // "-M-KuFlPmU1ahZEv8ptg"
 
         DatabaseUtils.firestoreDB.document("\(Team.TEAM)/\(teamId)").getDocument { (document, error) in

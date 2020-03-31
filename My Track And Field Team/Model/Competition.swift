@@ -131,4 +131,62 @@ class Competition: NSObject {
             return false
         }
     }
+    
+    // this method retrieves a dictionary of event names to array of event results from the datasnapshot
+    // the competitionsDict is needed so each event result takes it's respective competition for date/meet name in the stats tableview cell
+    static func getStatResults(snapshot: DataSnapshot, competitionsDict: [String: Competition], isCrossCountry: Bool) -> [String: [EventResult]] {
+        var dict = [String: [EventResult]]()
+        
+        let competitionEnumerator = snapshot.children
+        while let competitionSnapshot = competitionEnumerator.nextObject() as? DataSnapshot {
+            let competitionId = competitionSnapshot.key
+            let competition = competitionsDict[competitionId]
+            
+            if competition != nil {
+                let eventEnumerator = competitionSnapshot.children
+                while let eventSnapshot = eventEnumerator.nextObject() as? DataSnapshot {
+                    var event = eventSnapshot.key
+                    event = DatabaseUtils.decodeKey(key: event)
+                    if isCrossCountry {
+                        // this is so the title of the event is something like 'Sunken Meadow 2.8 Mile Run'
+                        event = competition!.course! + " " + event
+                    }
+                    
+                    if eventSnapshot.hasChild(TrackEvent.RESULTS) {
+                        let resultEnumerator = eventSnapshot.childSnapshot(forPath: TrackEvent.RESULTS).children
+                        while let resultSnapshot = resultEnumerator.nextObject() as? DataSnapshot {
+                            let eventResult = EventResult(snapshot: resultSnapshot)
+                            
+                            var eventResults = dict[event]
+                            if eventResults == nil {
+                                eventResults = [EventResult]()
+                            }
+                            
+                            // must make sure there is a result and it's not a foul or dq
+                            if !eventResult.isFoulOrDQ() && eventResult.result != nil {
+                                if eventResult.isRelay() {
+                                    let relay = Relay(snapshot: resultSnapshot)
+                                    relay.competition = competition
+                                    eventResults?.append(relay)
+                                    dict[event] = eventResults
+                                } else {
+                                    eventResult.competition = competition
+                                    eventResults?.append(eventResult)
+                                    dict[event] = eventResults
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        
+        
+        
+        
+        
+        
+        return dict
+    }
 }

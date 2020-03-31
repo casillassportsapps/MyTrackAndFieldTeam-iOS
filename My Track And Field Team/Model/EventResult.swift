@@ -44,6 +44,9 @@ class EventResult: NSObject {
     var attempts: [String]?
     var times: [String: String]?
     
+    var competition: Competition?
+    
+    
     override init() {
     }
     
@@ -129,6 +132,10 @@ class EventResult: NSObject {
     
     func isRelay() -> Bool {
         return TrackEvent.isRelayEvent(name: self.name ?? "")
+    }
+    
+    func isFoulOrDQ() -> Bool {
+        return seed != nil && (seed! == Double(EventResult.FOUL_SEED) || seed! == Double(EventResult.DQ_SEED))
     }
     
     // converts the time string into a Double for the seed field
