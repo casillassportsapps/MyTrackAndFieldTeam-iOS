@@ -83,21 +83,21 @@ class MainViewController: UIViewController {
     }
     
     var compListener: ListenerRegistration!
-    func getCompetitionData() {
+    func getCompetitionDataForSeasonStats() {
         let teamId = "-Kw7SanZs1Fry-It_NG9" // Islip
         let seasonId = "-Lj8rSokYrQ3l68CUDUa" // Outdoor 2019
         let isXC = false
         
         let path = "\(Competition.COMPETITIONS)/\(teamId)/\(seasonId)/\(Competition.RESULTS)"
-        DatabaseUtils.realTimeDB.child(path).observe(.value, with: { (snapshot) in
+        DatabaseUtils.realTimeDB.child(path).observeSingleEvent(of: .value, with: { (snapshot) in
             if !snapshot.exists() {
                 // show "No Stats"
                 return
             }
             
             // get competitions from the season
-            let competitionRef = DatabaseUtils.firestoreDB.collection("\(Team.TEAM)/\(teamId)/\(Team.SCHEDULE)")
-            self.compListener = competitionRef.whereField(Competition.SEASON_ID, isEqualTo: seasonId).addSnapshotListener({ querySnapshot, error in
+            let competitionsRef = DatabaseUtils.firestoreDB.collection("\(Team.TEAM)/\(teamId)/\(Team.SCHEDULE)")
+            self.compListener = competitionsRef.whereField(Competition.SEASON_ID, isEqualTo: seasonId).addSnapshotListener({ querySnapshot, error in
                 self.compListener.remove() //
 
                 if error != nil || querySnapshot == nil {
@@ -114,6 +114,7 @@ class MainViewController: UIViewController {
                 // get all results
                 let dict = Competition.getStatResults(snapshot: snapshot, competitionsDict: compDict, isCrossCountry: isXC)
                 
+                // print results as a check
                 for (key, value) in dict {
                     print(key)
                     print("-----------------")
@@ -131,6 +132,84 @@ class MainViewController: UIViewController {
                     print("-----------------")
                 }
             })
+        })
+    }
+    
+    func getCompetitionDataForTeamStats() {
+        // getting results of all of Islip's Outdoor seasons (user selected outdoor)
+        let teamId = "-Kw7SanZs1Fry-It_NG9" // Islip
+        
+        var seasonIds = [String]() // array of outdoor season ids
+        seasonIds.append("-Lj8rSokYrQ3l68CUDUV") // outdoor 2017
+        seasonIds.append("-Lj8rSokYrQ3l68CUDUY") // outdoor 2018
+        seasonIds.append("-Lj8rSokYrQ3l68CUDUa") // outdoor 2019
+        seasonIds.append("-M0-s8Cpx8IKQvpn1ugR") // outdoor 2020, this season has no results so datasnapshot won't exist
+        
+        let isXC = false
+        
+        var dataSnapshots = [DataSnapshot]()
+        
+        let group = DispatchGroup()
+        
+        for seasonId in seasonIds {
+            group.enter()
+            let path = "\(Competition.COMPETITIONS)/\(teamId)/\(seasonId)/\(Competition.RESULTS)"
+            DatabaseUtils.realTimeDB.child(path).observeSingleEvent(of: .value, with: { (snapshot) in
+                if snapshot.exists() {
+                    dataSnapshots.append(snapshot)
+                }
+                group.leave()
+            })
+        }
+        
+        group.notify(queue: .main, execute: {
+            // check if there are multiple seasons to display team stats
+            if dataSnapshots.count > 1 {
+                // get competitions from specific seasons
+                let competitionsRef = DatabaseUtils.firestoreDB.collection("\(Team.TEAM)/\(teamId)/\(Team.SCHEDULE)")
+                self.compListener = competitionsRef.whereField(Competition.SEASON_ID, in: seasonIds).addSnapshotListener({ querySnapshot, error in
+                    self.compListener.remove() //
+
+                    if error != nil || querySnapshot == nil {
+                        return
+                    }
+                    
+                    // create the competition dictionary
+                    var compDict = [String: Competition]()
+                    for document in querySnapshot!.documents {
+                        let competition = Competition(document: document)
+                        compDict[competition.id!] = competition
+                    }
+                    
+                    var teamStatsDict = [String: [EventResult]]()
+                    for snapshot in dataSnapshots {
+                        // get all results from season and merge into teamStatsDict
+                        let dict = Competition.getStatResults(snapshot: snapshot, competitionsDict: compDict, isCrossCountry: isXC)
+                        teamStatsDict.merge(dict, uniquingKeysWith: +)
+                    }
+                    
+                    // print results as a check
+                    for (key, value) in teamStatsDict {
+                        print(key)
+                        print("-----------------")
+                        for eventResult in value {
+                            if eventResult.isRelay() {
+                                let relay = eventResult as! Relay
+                                print(relay.result!)
+                                for athlete in relay.getRelayAthletes() {
+                                    print(athlete.fullName()!)
+                                }
+                            } else {
+                                print("\(eventResult.athlete!.fullName()!) \(eventResult.result!)")
+                            }
+                        }
+                        print("-----------------")
+                    }
+                })
+            } else {
+                // not enough seasons for team stats, go back to tablview of season names
+                // display message "You must have at least 2 {selected season} seasons of results. Otherwise view season stats."
+            }
         })
     }
     
