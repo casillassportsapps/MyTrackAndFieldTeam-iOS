@@ -57,7 +57,9 @@ class Record: NSObject {
         dict[Record.HOLDER] = holder
         dict[Record.RESULT] = result
         dict[Record.SEASON] = season
-        dict[Record.YEAR] = year
+        if year != nil {
+            dict[Record.YEAR] = year
+        }
         return dict
     }
 }
