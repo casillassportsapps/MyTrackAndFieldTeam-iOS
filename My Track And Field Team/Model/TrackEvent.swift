@@ -805,6 +805,16 @@ class TrackEvent: NSObject {
         return events
     }
     
+    static func getAllEvents(isIndoor: Bool, isMale: Bool) -> [String] {
+        var events = [String]()
+        events.append(contentsOf: getRunningEvents(isIndoor: isIndoor, isMale: isMale))
+        events.append(contentsOf: getWalkingEvents())
+        events.append(contentsOf: getFieldEvents(isIndoor: isIndoor))
+        events.append(contentsOf: getRelayEvents(isIndoor: isIndoor, isMale: isMale))
+        events.append(contentsOf: getMultiEvents(isIndoor: isIndoor, isMale: isMale))
+        return events
+    }
+    
     // index of event in allEvents array
     static func getIndex(event: String) -> Int {
         return getAllEvents().firstIndex(of: event)!

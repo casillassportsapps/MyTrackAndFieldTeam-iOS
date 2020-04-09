@@ -729,7 +729,7 @@ class DatabaseUtils {
         
         // add notification for user
         let notifRef = firestoreDB.document("\(Notification.NOTIFICATIONS)/\(notification.id!)")
-        batch.setData(notification.toDict(), forDocument: notifRef)
+        batch.deleteDocument(notifRef)
         
         batch.commit() { (error) in
             if error != nil {
