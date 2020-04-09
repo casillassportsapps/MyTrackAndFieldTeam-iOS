@@ -36,6 +36,7 @@
 		78A7284123EFA5B8006EB363 /* Competition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78A7284023EFA5B8006EB363 /* Competition.swift */; };
 		78A84389243F28660015D508 /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78A84388243F28660015D508 /* Notification.swift */; };
 		78A8438B243F36EC0015D508 /* UserNotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78A8438A243F36EC0015D508 /* UserNotificationsViewController.swift */; };
+		78A8438D243F3D490015D508 /* ManagersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78A8438C243F3D490015D508 /* ManagersViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -70,6 +71,7 @@
 		78A7284023EFA5B8006EB363 /* Competition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Competition.swift; sourceTree = "<group>"; };
 		78A84388243F28660015D508 /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
 		78A8438A243F36EC0015D508 /* UserNotificationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserNotificationsViewController.swift; sourceTree = "<group>"; };
+		78A8438C243F3D490015D508 /* ManagersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagersViewController.swift; sourceTree = "<group>"; };
 		7F3F3EB67F14C3DE7014F796 /* Pods_My_Track_And_Field_Team.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_My_Track_And_Field_Team.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FB00D1E1B59BBCC89B5466F1 /* Pods-My Track And Field Team.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-My Track And Field Team.release.xcconfig"; path = "Target Support Files/Pods-My Track And Field Team/Pods-My Track And Field Team.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -147,6 +149,7 @@
 				78565CC924087171007E142E /* DualMeetViewController.swift */,
 				78453DFB2429681700AA432C /* AthleteDetailsViewController.swift */,
 				78A8438A243F36EC0015D508 /* UserNotificationsViewController.swift */,
+				78A8438C243F3D490015D508 /* ManagersViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -322,6 +325,7 @@
 				7867F4A523D92AE700940326 /* MainViewController.swift in Sources */,
 				78A7283423EE29DC006EB363 /* Relay.swift in Sources */,
 				7873C19D23FF43D400BCB3C4 /* Location.swift in Sources */,
+				78A8438D243F3D490015D508 /* ManagersViewController.swift in Sources */,
 				78453E0024312EA800AA432C /* Record.swift in Sources */,
 				78A7283823EEE630006EB363 /* TrackEvent.swift in Sources */,
 				7867F4A123D92AE700940326 /* AppDelegate.swift in Sources */,

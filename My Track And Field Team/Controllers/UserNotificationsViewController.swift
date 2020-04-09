@@ -16,7 +16,7 @@ class UserNotificationsViewController: UIViewController {
         // Do any additional setup after loading the view.
         
         // firestore query gets notifications where userid = the user's id or 'app' limit to 10 documents
-        // user a snapshot listener
+        // use a snapshot listener
         DatabaseUtils.firestoreDB.collection(Notification.NOTIFICATIONS)
             .whereField(Notification.USER_ID, in: ["{userId}", "app"]).limit(to: 10)
         
