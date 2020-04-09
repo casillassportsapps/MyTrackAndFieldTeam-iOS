@@ -783,16 +783,16 @@ class TrackEvent: NSObject {
         events.append(JAVELIN)
         events.append(HAMMER)
         events.append(WEIGHT)
+        events.append(SHUTTLE_HURDLE_RELAY_55)
+        events.append(SHUTTLE_HURDLE_RELAY_60)
         events.append(FOUR_BY_ONE_HUNDRED)
+        events.append(SHUTTLE_HURDLE_RELAY_100)
+        events.append(SHUTTLE_HURDLE_RELAY_110)
         events.append(FOUR_BY_TWO_HUNDRED)
         events.append(FOUR_BY_FOUR_HUNDRED)
         events.append(FOUR_BY_EIGHT_HUNDRED)
         events.append(FOUR_BY_FIFTEEN_HUNDRED)
         events.append(FOUR_BY_SIXTEEN_HUNDRED)
-        events.append(SHUTTLE_HURDLE_RELAY_55)
-        events.append(SHUTTLE_HURDLE_RELAY_60)
-        events.append(SHUTTLE_HURDLE_RELAY_100)
-        events.append(SHUTTLE_HURDLE_RELAY_110)
         events.append(EIGHT_HUNDRED_MEDLEY_RELAY)
         events.append(SIXTEEN_HUNDRED_MEDLEY_RELAY)
         events.append(SWEDISH_MEDLEY_RELAY)
@@ -859,7 +859,11 @@ class TrackEvent: NSObject {
     static let JAVELIN = "Javelin"
     static let HAMMER = "Hammer"
     static let WEIGHT = "Weight"
+    static let SHUTTLE_HURDLE_RELAY_55 = "4x55H" // indoor season only
+    static let SHUTTLE_HURDLE_RELAY_60 = "4x60H" // indoor season only
     static let FOUR_BY_ONE_HUNDRED = "4x100m"
+    static let SHUTTLE_HURDLE_RELAY_100 = "4x100H" // outdoor season, female only
+    static let SHUTTLE_HURDLE_RELAY_110 = "4x110H" // outdoor season, male only
     static let FOUR_BY_TWO_HUNDRED = "4x200m"
     static let FOUR_BY_FOUR_HUNDRED = "4x400m"
     static let FOUR_BY_EIGHT_HUNDRED = "4x800m"
@@ -869,10 +873,6 @@ class TrackEvent: NSObject {
     static let SIXTEEN_HUNDRED_MEDLEY_RELAY = "1600m Medley Relay"
     static let SWEDISH_MEDLEY_RELAY = "Swedish Medley Relay"
     static let DISTANCE_MEDLEY_RELAY = "Distance Medley Relay"
-    static let SHUTTLE_HURDLE_RELAY_55 = "4x55H" // indoor season only
-    static let SHUTTLE_HURDLE_RELAY_60 = "4x60H" // indoor season only
-    static let SHUTTLE_HURDLE_RELAY_100 = "4x100H" // outdoor season, female only
-    static let SHUTTLE_HURDLE_RELAY_110 = "4x110H" // outdoor season, male only
     static let PENTATHLON = "Pentathlon"
     static let PENTATHLON_INDOOR = "Pentathlon (Indoor)"
     static let PENTATHLON_OUTDOOR = "Pentathlon (Outdoor)"
