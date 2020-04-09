@@ -46,7 +46,7 @@ class ManagersViewController: UIViewController {
         
         // add button - search user and send manager request
         // have a textfield that automatically runs the below function when a legitmate email is entered
-        // owner can't enter own email or an email have a current manager
+        // owner can't enter own email or an email of a current manager
         DatabaseUtils.firestoreDB.collection(User.USER).whereField(User.EMAIL, isEqualTo: "{entered email}").getDocuments() {
             (snapshots, err) in
             // should only get one document since emails are unique
