@@ -34,6 +34,8 @@
 		78A7283C23EF293E006EB363 /* EventDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78A7283B23EF293E006EB363 /* EventDetailsViewController.swift */; };
 		78A7283F23EFA2BF006EB363 /* DatabaseUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78A7283E23EFA2BF006EB363 /* DatabaseUtils.swift */; };
 		78A7284123EFA5B8006EB363 /* Competition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78A7284023EFA5B8006EB363 /* Competition.swift */; };
+		78A84389243F28660015D508 /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78A84388243F28660015D508 /* Notification.swift */; };
+		78A8438B243F36EC0015D508 /* UserNotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78A8438A243F36EC0015D508 /* UserNotificationsViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -66,6 +68,8 @@
 		78A7283B23EF293E006EB363 /* EventDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailsViewController.swift; sourceTree = "<group>"; };
 		78A7283E23EFA2BF006EB363 /* DatabaseUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseUtils.swift; sourceTree = "<group>"; };
 		78A7284023EFA5B8006EB363 /* Competition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Competition.swift; sourceTree = "<group>"; };
+		78A84388243F28660015D508 /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
+		78A8438A243F36EC0015D508 /* UserNotificationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserNotificationsViewController.swift; sourceTree = "<group>"; };
 		7F3F3EB67F14C3DE7014F796 /* Pods_My_Track_And_Field_Team.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_My_Track_And_Field_Team.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FB00D1E1B59BBCC89B5466F1 /* Pods-My Track And Field Team.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-My Track And Field Team.release.xcconfig"; path = "Target Support Files/Pods-My Track And Field Team/Pods-My Track And Field Team.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -142,6 +146,7 @@
 				78A7283B23EF293E006EB363 /* EventDetailsViewController.swift */,
 				78565CC924087171007E142E /* DualMeetViewController.swift */,
 				78453DFB2429681700AA432C /* AthleteDetailsViewController.swift */,
+				78A8438A243F36EC0015D508 /* UserNotificationsViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -163,6 +168,7 @@
 				7873C19C23FF43D400BCB3C4 /* Location.swift */,
 				78453DFD242FA37900AA432C /* Note.swift */,
 				78453DFF24312EA800AA432C /* Record.swift */,
+				78A84388243F28660015D508 /* Notification.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -312,6 +318,7 @@
 				787F4E2223F0A023008A4465 /* Score.swift in Sources */,
 				78A7283A23EF2333006EB363 /* MeetDetailsViewController.swift in Sources */,
 				78453DFE242FA37900AA432C /* Note.swift in Sources */,
+				78A84389243F28660015D508 /* Notification.swift in Sources */,
 				7867F4A523D92AE700940326 /* MainViewController.swift in Sources */,
 				78A7283423EE29DC006EB363 /* Relay.swift in Sources */,
 				7873C19D23FF43D400BCB3C4 /* Location.swift in Sources */,
@@ -324,6 +331,7 @@
 				78A7283C23EF293E006EB363 /* EventDetailsViewController.swift in Sources */,
 				78A7284123EFA5B8006EB363 /* Competition.swift in Sources */,
 				787F4E2023F05B33008A4465 /* Season.swift in Sources */,
+				78A8438B243F36EC0015D508 /* UserNotificationsViewController.swift in Sources */,
 				7867F4A323D92AE700940326 /* SceneDelegate.swift in Sources */,
 				78A7283223ED0157006EB363 /* EventResult.swift in Sources */,
 				7873C19923FF407F00BCB3C4 /* Team.swift in Sources */,

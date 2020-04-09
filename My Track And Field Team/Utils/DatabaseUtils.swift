@@ -678,7 +678,92 @@ class DatabaseUtils {
         realTimeDB.updateChildValues(updates)
     }
     
-    // delete manager from team
+    // delete notification
+    static func deleteNotification(notificationId: String) {
+        let notifRef = firestoreDB.document("\(Notification.NOTIFICATIONS)/\(notificationId)")
+        notifRef.delete()
+    }
+    
+    // send a manger request to a user, also write to realtime database which triggers a function to deliver a push notification
+    static func requestManager(team: Team, user: User) {
+        let notification = Notification()
+        notification.id = user.id // gaurantees the user gets one manager request at a time
+        notification.userId = user.id
+        notification.teamId = team.id
+        notification.title = "Assistant Coach Request"
+        notification.message = "You have been requested to be an assistant coach of \(team.name!)."
+        notification.type = Notification.TYPE_MANAGER_REQUEST
+        notification.tokens = user.tokens
+        
+        let batch = firestoreDB.batch()
+        
+        // add pending to user teams with team id
+        let userRef = firestoreDB.document("\(User.USER)/\(user.id!)")
+        batch.updateData(["\(User.TEAMS).\(team.id!)": "pending"], forDocument: userRef)
+        
+        // add notification for user
+        let notifRef = firestoreDB.document("\(Notification.NOTIFICATIONS)/\(notification.id!)")
+        batch.setData(notification.toDict(), forDocument: notifRef)
+        
+        batch.commit() { (error) in
+            if error != nil {
+                print("error in firestore")
+            } else {
+                realTimeDB.child("managerRequests/\(notification.id!)").setValue(notification.toDictRequest())
+                // possibly add completition listener here
+            }
+        }
+    }
+    
+    // user accepts role as assistance coach
+    static func acceptManager(notification: Notification) {
+        let batch = firestoreDB.batch()
+        
+        // adds user as manager in team
+        let teamRef = firestoreDB.document("\(Team.TEAM)/\(notification.teamId!)")
+        batch.updateData([Team.MANAGERS: FieldValue.arrayUnion([notification.userId!])], forDocument: teamRef)
+        
+        // add manager to user teams with team id
+        let userRef = firestoreDB.document("\(User.USER)/\(notification.userId!)")
+        batch.updateData(["\(User.TEAMS).\(notification.teamId!)": Team.MANAGER], forDocument: userRef)
+        
+        // add notification for user
+        let notifRef = firestoreDB.document("\(Notification.NOTIFICATIONS)/\(notification.id!)")
+        batch.setData(notification.toDict(), forDocument: notifRef)
+        
+        batch.commit() { (error) in
+            if error != nil {
+                print("error in firestore")
+            } else {
+                let path = "\(Access.ACCESS)/\(notification.teamId!)/\(Access.MANAGERS)/\(notification.userId!)"
+                realTimeDB.child(path).setValue(true)
+                // possibly add completition listener here
+            }
+        }
+    }
+    
+    // cancel/decline a pending manger request either from owner side or potential assistant side
+    static func cancelManager(notification: Notification) {
+        let batch = firestoreDB.batch()
+        
+        // removes team id from user's teams
+        let userRef = firestoreDB.document("\(User.USER)/\(notification.userId!)")
+        batch.updateData(["\(User.TEAMS).\(notification.teamId!)": FieldValue.delete()], forDocument: userRef)
+        
+        // delete notification from user
+        let notifRef = firestoreDB.document("\(Notification.NOTIFICATIONS)/\(notification.id!)")
+        batch.deleteDocument(notifRef)
+        
+        batch.commit() { (error) in
+           if error != nil {
+                print("error in firestore")
+            } else {
+                // possible completition listener
+            }
+        }
+    }
+    
+    // delete manager from team and all access fields
     static func deleteManager(team: Team, userId: String, completion: @escaping(_ error: String?) -> Void) {
         let teamId = team.id!
         
