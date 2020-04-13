@@ -56,4 +56,12 @@ class User: NSObject {
         dict[User.EMAIL] = email
         return dict
     }
+    
+    func isSubscribed() -> Bool {
+        return subscription != User.SUBSCRIPTION_NONE
+    }
+    
+    func isSubscribedAsManager() -> Bool {
+        return subscription == User.SUBSCRIPTION_MANAGER
+    }
 }

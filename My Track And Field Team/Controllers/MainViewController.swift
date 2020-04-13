@@ -79,7 +79,7 @@ class MainViewController: UIViewController {
     
     // TESTING DATABASE AND METHODS BELOW
     func test() {
-        
+        deleteManager()
     }
     
     var compListener: ListenerRegistration!
@@ -214,24 +214,25 @@ class MainViewController: UIViewController {
     }
     
     func deleteManager() {
-        let teamId = "-Kw7SanZs1Fry-It_NG9" // "-M-KuFlPmU1ahZEv8ptg"
+        //let teamId = "-Kw7SanZs1Fry-It_NG9"
+        let teamId = "-M-KuFlPmU1ahZEv8ptg"
 
         DatabaseUtils.firestoreDB.document("\(Team.TEAM)/\(teamId)").getDocument { (document, error) in
             if let document = document, document.exists {
                 let team = Team(document: document)
                 
-                var managers = [String]()
-                managers.append(self.uId)
-                
-                for season in team.seasons! {
-                    if season.id != "-Lj8rSokYrQ3l68CUDUV" {
-                        season.managers = managers
+                let accessPath = "\(Access.ACCESS)/\(teamId)"
+                DatabaseUtils.realTimeDB.child(accessPath).observeSingleEvent(of: .value) { (snapshot) in
+                    let access = Access(snapshot: snapshot)
+                    
+                    for season in team.seasons! {
+                        season.managers = access.seasonManagers![season.id!]
                     }
+                    
+                    DatabaseUtils.deleteManager(team: team, userId: self.uId, completion: { error in
+                        print(error ?? "Success")
+                    })
                 }
-                
-                DatabaseUtils.deleteManager(team: team, userId: self.uId, completion: { error in
-                    print(error ?? "Success")
-                })
             } else {
                 print("Document does not exist")
             }

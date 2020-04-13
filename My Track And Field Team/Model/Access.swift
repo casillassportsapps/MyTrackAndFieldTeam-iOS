@@ -106,13 +106,4 @@ class Access: NSObject {
         
         return seasonLock?[seasonId] ?? false
     }
-    
-    func hasTeamAccess(userId: String) -> Bool {
-        return isTeamOwner(id: userId) && isTeamManager(id: userId)
-    }
-
-    func hasSeasonAccess(seasonId: String, userId: String) -> Bool {
-        return isTeamOwner(id: userId) && isSeasonManager(seasonId: seasonId, userId: userId)
-    }
-    
 }

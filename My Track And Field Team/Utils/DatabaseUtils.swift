@@ -857,4 +857,29 @@ class DatabaseUtils {
         let path = "\(Team.TEAM)/\(teamId)/\(Team.RECORDS)/\(record.id!)"
         firestoreDB.document(path).delete()
     }
+    
+    static func storePurchasesToDatabase(userId: String, subscription: Int, subscriptionEnds: Int, purchaseInfo: Any) {
+        var updates = [String: Any]()
+        
+        let batch = firestoreDB.batch()
+        let userRef = firestoreDB.document("\(User.USER)/\(userId)")
+        
+        updates[User.SUBSCRIPTION] = subscription
+        updates[User.SUBSCRIPTION_ENDS] = subscriptionEnds
+        
+        batch.updateData(updates, forDocument: userRef)
+        
+        // you will have to come up with a way to store the purchase order receipt, etc
+        // see url for android example:
+        // https://console.firebase.google.com/u/0/project/my-track-and-field-team-c3892/database/firestore/data~2Fbilling~2FGPA.3302-4737-4489-95272
+        let billingRef = firestoreDB.document("billing/{purchaseInfo.ORDER_ID}")
+        updates = [String: Any]()
+        updates["userId"] = userId
+        updates["receipt"] = "{purchaseInfo.RECEIPT}" // this is an example, I don't know how apple works
+        updates["signature"] = "{purchaseInfo.SIGNATURE}" // this is an example, I don't know how apple works
+        
+        batch.setData(updates, forDocument: billingRef)
+        
+        batch.commit()
+    }
 }

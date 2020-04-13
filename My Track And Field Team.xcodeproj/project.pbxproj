@@ -38,6 +38,8 @@
 		78A8438B243F36EC0015D508 /* UserNotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78A8438A243F36EC0015D508 /* UserNotificationsViewController.swift */; };
 		78A8438D243F3D490015D508 /* ManagersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78A8438C243F3D490015D508 /* ManagersViewController.swift */; };
 		78A8438F244080800015D508 /* UserSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78A8438E244080800015D508 /* UserSettingsViewController.swift */; };
+		78A843912443D7C70015D508 /* AccessUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78A843902443D7C70015D508 /* AccessUtils.swift */; };
+		78A843932443E70E0015D508 /* SubscriptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78A843922443E70E0015D508 /* SubscriptionsViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -74,6 +76,8 @@
 		78A8438A243F36EC0015D508 /* UserNotificationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserNotificationsViewController.swift; sourceTree = "<group>"; };
 		78A8438C243F3D490015D508 /* ManagersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagersViewController.swift; sourceTree = "<group>"; };
 		78A8438E244080800015D508 /* UserSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsViewController.swift; sourceTree = "<group>"; };
+		78A843902443D7C70015D508 /* AccessUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessUtils.swift; sourceTree = "<group>"; };
+		78A843922443E70E0015D508 /* SubscriptionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionsViewController.swift; sourceTree = "<group>"; };
 		7F3F3EB67F14C3DE7014F796 /* Pods_My_Track_And_Field_Team.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_My_Track_And_Field_Team.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FB00D1E1B59BBCC89B5466F1 /* Pods-My Track And Field Team.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-My Track And Field Team.release.xcconfig"; path = "Target Support Files/Pods-My Track And Field Team/Pods-My Track And Field Team.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -153,6 +157,7 @@
 				78A8438A243F36EC0015D508 /* UserNotificationsViewController.swift */,
 				78A8438C243F3D490015D508 /* ManagersViewController.swift */,
 				78A8438E244080800015D508 /* UserSettingsViewController.swift */,
+				78A843922443E70E0015D508 /* SubscriptionsViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -183,6 +188,7 @@
 			isa = PBXGroup;
 			children = (
 				78A7283E23EFA2BF006EB363 /* DatabaseUtils.swift */,
+				78A843902443D7C70015D508 /* AccessUtils.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -334,8 +340,10 @@
 				78A7283823EEE630006EB363 /* TrackEvent.swift in Sources */,
 				7867F4A123D92AE700940326 /* AppDelegate.swift in Sources */,
 				78A7283623EE36A5006EB363 /* MultiEvent.swift in Sources */,
+				78A843932443E70E0015D508 /* SubscriptionsViewController.swift in Sources */,
 				7873C19B23FF42FE00BCB3C4 /* User.swift in Sources */,
 				78453DFC2429681700AA432C /* AthleteDetailsViewController.swift in Sources */,
+				78A843912443D7C70015D508 /* AccessUtils.swift in Sources */,
 				78A7283C23EF293E006EB363 /* EventDetailsViewController.swift in Sources */,
 				78A7284123EFA5B8006EB363 /* Competition.swift in Sources */,
 				787F4E2023F05B33008A4465 /* Season.swift in Sources */,
