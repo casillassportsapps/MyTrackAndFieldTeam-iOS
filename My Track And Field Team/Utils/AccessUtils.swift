@@ -29,17 +29,6 @@ class AccessUtils {
         return isSubscribed
     }
     
-    // is the user subscribed, but with the manager option
-    func isSubscribedAsManager(showError: Bool) -> Bool {
-        let isSubscribedAsManager = self.user != nil && self.user.isSubscribedAsManager()
-        if (showError && !isSubscribedAsManager) {
-            let message = "Manager subscriptions do not have access to this function."
-            // show alert with message
-        }
-        
-        return isSubscribedAsManager
-    }
-    
     // is the user a season manager
     func isSeasonManager(season: Season, showError: Bool) -> Bool {
         if self.access == nil {
@@ -105,5 +94,55 @@ class AccessUtils {
         // show alert with message
         
         return false
+    }
+    
+    
+    // app subscription and season access logic
+    func logic() {
+        // Main UI when adding a team - must be a subscribed user but not a manager subscription
+        if self.isSubscribed(showError: true) {
+            if self.user.subscription == User.SUBSCRIPTION_MANAGER {
+                let message = "Manager subscriptions do not have access to this function."
+                // show alert with message
+            } else {
+                // Add Team
+            }
+        }
+        
+        // Main UI when adding a season
+        // use: isTeamOwner() && isSubscribed(showError: true)
+        
+        // Exporting to .pdf or .cvs
+        // use: isSubscribed(showError: true)
+        
+        // Team UI
+        // season add button and ability to change the team photo
+        // use: isTeamOwner() && isSubscribed(showError: true)
+        
+        // School Records UI
+        // right now you must be a team owner to add a school record or the add button is hidden, you also must be a subscribed user
+        // same logic with editing a school record
+        // use: isTeamOwner() && isSubscribed(showError: true)
+        
+        // Managers UI - only displays for team owner
+        // the only thing a user can't do is add a manager.
+        // use: isSubscribed(showError: true)
+        
+        // Athlete Profile UI and Athlete Notes UI
+        // adding, editing or deleting, including athlete photo
+        // use: hasAthleteAccess(athlete: athlete)
+
+        // For the rest of the app (Roster, Schedule, Competition Details, Event Details, Dual Meet)
+        // use: hasSeasonAccess(season: season, showError: true) before showing the action
+        // for the following actions:
+        // clicking the add button
+        // edit
+        // delete
+        // load (competition details)
+        // save (competition details)
+        // any event result option (event details)
+        // setting event time (event details)
+        // post score (dual meet)
+        // changing place (dual meet)
     }
 }
